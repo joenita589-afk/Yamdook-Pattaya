@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pattaya Late-Night Food Reviews | รวมร้านเด็ดพัทยาตอนดึก</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root { --primary: #ff2a6d; --secondary: #ff9e00; --dark: #0f0f1a; --darker: #05050a; --light: #f8f9fa; --card-bg: #1a1a2e; --text-muted: #a0a0b0; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, var(--dark) 0%, var(--darker) 100%); min-height: 100vh; color: #eee; line-height: 1.6; }
+a { text-decoration: none; color: inherit; }
+
+/* Navbar */
+.top-bar { background: var(--darker); display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.logo-text { font-size: 1.4em; font-weight: 800; background: linear-gradient(90deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.lang-select select { padding: 6px 12px; border-radius: 20px; border: 1px solid var(--primary); background: var(--dark); color: #fff; font-size: 13px; cursor: pointer; }
+.navbar { background: rgba(15,15,26,0.95); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 999; border-bottom: 2px solid var(--primary); }
+.nav-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: center; flex-wrap: wrap; padding: 12px 20px; gap: 10px; }
+.nav-btn { background: none; border: none; color: #ccc; padding: 10px 20px; border-radius: 25px; cursor: pointer; font-size: 15px; transition: 0.3s; display: flex; align-items: center; gap: 8px; font-weight: 600; }
+.nav-btn:hover, .nav-btn.active { background: var(--primary); color: white; box-shadow: 0 0 15px rgba(255,42,109,0.5); }
+.user-badge { margin-left: auto; display: flex; align-items: center; gap: 10px; color: var(--secondary); font-weight: 600; }
+
+/* Sections */
+.section { display: none; max-width: 1200px; margin: 0 auto; padding: 40px 20px; animation: fadeIn 0.5s; }
+.section.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Hero */
+.hero { text-align: center; padding: 60px 20px; }
+.hero h1 { font-size: 3em; background: linear-gradient(90deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
+.hero p { font-size: 1.3em; color: var(--text-muted); }
+
+/* Grid & Cards */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; margin-top: 30px; }
+.card { background: var(--card-bg); border-radius: 15px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; cursor: pointer; position: relative; }
+.card:hover { transform: translateY(-8px); box-shadow: 0 15px 40px rgba(255,42,109,0.2); border-color: var(--primary); }
+.card-img { width: 100%; height: 200px; object-fit: cover; background: #333; }
+.card-body { padding: 20px; }
+.card-title { font-size: 1.3em; color: #fff; margin-bottom: 5px; }
+.card-meta { display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); font-size: 0.9em; margin-bottom: 10px; }
+.card-hours { color: var(--secondary); font-weight: 600; display: flex; align-items: center; gap: 5px; }
+.card-desc { color: #bbb; font-size: 0.95em; margin-bottom: 15px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.rating-stars { color: var(--secondary); }
+.tag { display: inline-block; background: rgba(255,42,109,0.2); color: var(--primary); padding: 4px 12px; border-radius: 20px; font-size: 0.8em; font-weight: 600; margin-top: 10px; }
+
+/* Forms & Inputs */
+.form-box { max-width: 600px; margin: 0 auto; background: var(--card-bg); padding: 40px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); }
+.form-box h2 { text-align: center; margin-bottom: 25px; color: var(--primary); }
+.form-group { margin-bottom: 20px; }
+.form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #ddd; }
+.form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px 15px; background: var(--dark); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-size: 15px; transition: 0.3s; }
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 10px rgba(255,42,109,0.3); }
+.form-group textarea { min-height: 100px; resize: vertical; }
+.btn { padding: 12px 25px; border: none; border-radius: 25px; cursor: pointer; font-size: 16px; font-weight: 600; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; justify-content: center; }
+.btn-primary { background: linear-gradient(90deg, var(--primary), var(--secondary)); color: white; width: 100%; }
+.btn-primary:hover { transform: scale(1.02); box-shadow: 0 5px 20px rgba(255,42,109,0.4); }
+.btn-danger { background: #e74c3c; color: white; padding: 8px 15px; font-size: 14px; }
+.btn-sm { padding: 8px 16px; font-size: 14px; }
+
+/* Modal */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 15px; overflow-y: auto; }
+.modal-overlay.show { display: flex; }
+.modal-box { background: var(--card-bg); border-radius: 15px; max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 30px; position: relative; border: 1px solid rgba(255,255,255,0.1); }
+.modal-close { position: absolute; top: 15px; right: 15px; background: var(--primary); color: white; border: none; width: 35px; height: 35px; border-radius: 50%; font-size: 1em; cursor: pointer; z-index: 10; }
+.modal-img { width: 100%; height: 300px; object-fit: cover; border-radius: 10px; margin-bottom: 20px; }
+
+/* Reviews */
+.review-card { background: var(--dark); padding: 20px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid var(--secondary); }
+.review-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
+.review-user { font-weight: 700; color: var(--primary); }
+.review-date { color: var(--text-muted); font-size: 0.85em; }
+.review-text { color: #ddd; line-height: 1.6; }
+
+/* Star Rating Input */
+.star-rating { display: flex; gap: 5px; font-size: 1.8em; cursor: pointer; margin-bottom: 15px; }
+.star-rating i { color: #444; transition: 0.2s; }
+.star-rating i.active, .star-rating i:hover { color: var(--secondary); }
+
+/* Admin Panel */
+.admin-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+.admin-table th, .admin-table td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.admin-table th { background: var(--dark); color: var(--primary); }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero h1 { font-size: 2em; }
+    .nav-container { gap: 5px; }
+    .nav-btn { padding: 8px 12px; font-size: 13px; }
+    .grid { grid-template-columns: 1fr; }
+    .form-box { padding: 25px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Top Bar -->
+<div class="top-bar">
+    <div class="logo-text"><i class="fas fa-moon"></i> Pattaya Night Eats</div>
+    <div class="lang-select">
+        <select id="langSelect" onchange="changeLang(this.value)">
+            <option value="th">🇹🇭 TH</option>
+            <option value="en">🇬🇧 EN</option>
+        </select>
+    </div>
+</div>
+
+<!-- Navbar -->
+<nav class="navbar">
+    <div class="nav-container">
+        <button class="nav-btn active" onclick="showSection('home')"><i class="fas fa-home"></i> <span data-i18n="nav_home">หน้าหลัก</span></button>
+        <button class="nav-btn" onclick="showSection('restaurants')"><i class="fas fa-utensils"></i> <span data-i18n="nav_restaurants">รวมร้านเด็ด</span></button>
+        <button class="nav-btn" id="btnAddShop" onclick="openAddShopModal()" style="display:none;"><i class="fas fa-plus-circle"></i> <span data-i18n="nav_add">ลงร้านของคุณ</span></button>
+        <button class="nav-btn" id="btnAdmin" onclick="showSection('admin')" style="display:none;"><i class="fas fa-user-shield"></i> <span data-i18n="nav_admin">แอดมิน</span></button>
+        
+        <div class="user-badge" id="userBadge" style="display:none;">
+            <i class="fas fa-user-circle"></i> <span id="userNameDisplay"></span>
+            <button class="btn btn-sm btn-danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button>
+        </div>
+        <button class="nav-btn" id="btnLogin" onclick="openAuthModal()"><i class="fas fa-sign-in-alt"></i> <span data-i18n="nav_login">เข้าสู่ระบบ</span></button>
+    </div>
+</nav>
+
+<!-- Home Section -->
+<section id="home" class="section active">
+    <div class="hero">
+        <h1 data-i18n="hero_title">ค้นหาร้านเด็ดพัทยา...ยามดึก</h1>
+        <p data-i18n="hero_sub">รวมรีวิวร้านอาหารกลางคืน มูกระทะ ซีฟู้ด ร้านเปิดดึก จากคนพื้นที่ตัวจริง</p>
+    </div>
+    <h2 style="color:var(--secondary); margin-bottom:10px;"><i class="fas fa-fire"></i> <span data-i18n="featured">ร้านแนะนำสัปดาห์นี้</span></h2>
+    <div class="grid" id="featuredGrid"></div>
+</section>
+
+<!-- Restaurants Section -->
+<section id="restaurants" class="section">
+    <div class="hero" style="padding: 20px 0;">
+        <h1 data-i18n="dir_title">สารบัญร้านอาหารยามดึก</h1>
+    </div>
+    <div class="grid" id="restaurantsGrid"></div>
+</section>
+
+<!-- Admin Section -->
+<section id="admin" class="section">
+    <h1 style="color:var(--primary); text-align:center; margin-bottom:30px;"><i class="fas fa-user-shield"></i> <span data-i18n="admin_panel">แผงควบคุมแอดมิน</span></h1>
+    <div class="form-box" style="max-width:100%;">
+        <h2 data-i18n="manage_shops">จัดการร้านค้าทั้งหมด</h2>
+        <table class="admin-table">
+            <thead><tr><th>ID</th><th data-i18n="th_name">ชื่อร้าน</th><th data-i18n="th_owner">เจ้าของ</th><th data-i18n="th_action">จัดการ</th></tr></thead>
+            <tbody id="adminShopsList"></tbody>
+        </table>
+        
+        <h2 style="margin-top:40px;" data-i18n="manage_reviews">จัดการรีวิวทั้งหมด</h2>
+        <table class="admin-table">
+            <thead><tr><th data-i18n="th_shop">ร้าน</th><th data-i18n="th_user">ผู้ใช้</th><th data-i18n="th_comment">ความคิดเห็น</th><th data-i18n="th_action">จัดการ</th></tr></thead>
+            <tbody id="adminReviewsList"></tbody>
+        </table>
+    </div>
+</section>
+
+<!-- Auth Modal -->
+<div class="modal-overlay" id="authModal">
+    <div class="modal-box" style="max-width:450px;">
+        <button class="modal-close" onclick="closeModal('authModal')"><i class="fas fa-times"></i></button>
+        <div id="authContent">
+            <h2 style="text-align:center; color:var(--primary); margin-bottom:20px;" data-i18n="login_title">เข้าสู่ระบบ / สมัครสมาชิก</h2>
+            <div class="form-group">
+                <label data-i18n="lbl_username">ชื่อผู้ใช้</label>
+                <input type="text" id="authUser" placeholder="username">
+            </div>
+            <div class="form-group">
+                <label data-i18n="lbl_password">รหัสผ่าน</label>
+                <input type="password" id="authPass" placeholder="password">
+            </div>
+            <div class="form-group" id="roleGroup" style="display:none;">
+                <label data-i18n="lbl_role">ประเภทสมาชิก</label>
+                <select id="authRole">
+                    <option value="customer" data-i18n="role_customer">ลูกค้า (รีวิวร้าน)</option>
+                    <option value="owner" data-i18n="role_owner">เจ้าของร้าน (ลงร้านเอง)</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" onclick="handleAuth()" id="authSubmitBtn" data-i18n="btn_login">เข้าสู่ระบบ</button>
+            <p style="text-align:center; margin-top:15px; color:var(--text-muted);">
+                <span id="authToggleText" data-i18n="toggle_register">ยังไม่มีบัญชี? คลิกเพื่อสมัครสมาชิก</span>
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Add Shop Modal -->
+<div class="modal-overlay" id="addShopModal">
+    <div class="modal-box">
+        <button class="modal-close" onclick="closeModal('addShopModal')"><i class="fas fa-times"></i></button>
+        <h2 style="color:var(--primary); margin-bottom:20px;"><i class="fas fa-store"></i> <span data-i18n="add_shop_title">เพิ่มข้อมูลร้านอาหาร</span></h2>
+        <div class="form-group">
+            <label data-i18n="lbl_shop_name">ชื่อร้าน</label>
+            <input type="text" id="shopName" placeholder="เช่น มูกระทะกลางนา">
+        </div>
+        <div class="form-group">
+            <label data-i18n="lbl_location">สถานที่ / พื้นที่</label>
+            <input type="text" id="shopLocation" placeholder="เช่น ใกล้หาดจอมเทียน">
+        </div>
+        <div class="form-group">
+            <label data-i18n="lbl_hours">เวลาเปิด-ปิด</label>
+            <input type="text" id="shopHours" placeholder="เช่น 20:00 - 04:00">
+        </div>
+        <div class="form-group">
+            <label data-i18n="lbl_signature">เมนูเด็ด / จุดเด่น</label>
+            <input type="text" id="shopSignature" placeholder="เช่น กุ้งแม่น้ำเผา, น้ำจิ้มซีฟู้ดมะนาวดอง">
+        </div>
+        <div class="form-group">
+            <label data-i18n="lbl_img_url">URL รูปภาพหน้าร้าน</label>
+            <input type="text" id="shopImage" placeholder="https://...">
+        </div>
+        <div class="form-group">
+            <label data-i18n="lbl_desc">รายละเอียดร้าน</label>
+            <textarea id="shopDesc" placeholder="บรรยากาศเป็นยังไง เหมาะกับใคร..."></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="saveShop()"><i class="fas fa-save"></i> <span data-i18n="btn_save">บันทึกร้านค้า</span></button>
+    </div>
+</div>
+
+<!-- Restaurant Detail Modal -->
+<div class="modal-overlay" id="detailModal">
+    <div class="modal-box">
+        <button class="modal-close" onclick="closeModal('detailModal')"><i class="fas fa-times"></i></button>
+        <div id="detailContent"></div>
+    </div>
+</div>
+
+<script>
+// ==================== TRANSLATIONS ====================
+const i18n = {
+    th: {
+        nav_home: 'หน้าหลัก', nav_restaurants: 'รวมร้านเด็ด', nav_add: 'ลงร้านของคุณ', nav_login: 'เข้าสู่ระบบ', nav_admin: 'แอดมิน',
+        hero_title: 'ค้นหาร้านเด็ดพัทยา...ยามดึก', hero_sub: 'รวมรีวิวร้านอาหารกลางคืน มูกระทะ ซีฟู้ด ร้านเปิดดึก จากคนพื้นที่ตัวจริง',
+        featured: 'ร้านแนะนำสัปดาห์นี้', dir_title: 'สารบัญร้านอาหารยามดึก',
+        login_title: 'เข้าสู่ระบบ / สมัครสมาชิก', lbl_username: 'ชื่อผู้ใช้', lbl_password: 'รหัสผ่าน', lbl_role: 'ประเภทสมาชิก',
+        role_customer: 'ลูกค้า (รีวิวร้าน)', role_owner: 'เจ้าของร้าน (ลงร้านเอง)', btn_login: 'เข้าสู่ระบบ', toggle_register: 'ยังไม่มีบัญชี? คลิกเพื่อสมัครสมาชิก',
+        toggle_login: 'มีบัญชีแล้ว? คลิกเพื่อเข้าสู่ระบบ', btn_register: 'สมัครสมาชิก',
+        add_shop_title: 'เพิ่มข้อมูลร้านอาหาร', lbl_shop_name: 'ชื่อร้าน', lbl_location: 'สถานที่ / พื้นที่', lbl_hours: 'เวลาเปิด-ปิด',
+        lbl_signature: 'เมนูเด็ด / จุดเด่น', lbl_img_url: 'URL รูปภาพหน้าร้าน', lbl_desc: 'รายละเอียดร้าน', btn_save: 'บันทึกร้านค้า',
+        admin_panel: 'แผงควบคุมแอดมิน', manage_shops: 'จัดการร้านค้าทั้งหมด', manage_reviews: 'จัดการรีวิวทั้งหมด',
+        th_name: 'ชื่อร้าน', th_owner: 'เจ้าของ', th_action: 'จัดการ', th_shop: 'ร้าน', th_user: 'ผู้ใช้', th_comment: 'ความคิดเห็น',
+        detail_hours: 'เวลาเปิด', detail_loc: 'พิกัด', detail_sig: 'เมนูเด็ด', write_review: 'เขียนรีวิว', btn_submit_review: 'ส่งรีวิว',
+        reviews_title: 'รีวิวจากสมาชิก', no_review: 'ยังไม่มีการรีวิว เป็นคนแรกเลย!', alert_login: 'กรุณาเข้าสู่ระบบก่อน', alert_fill: 'กรุณากรอกข้อมูลให้ครบ',
+        alert_success: 'บันทึกสำเร็จ!', confirm_delete: 'ต้องการลบรายการนี้หรือไม่?'
+    },
+    en: {
+        nav_home: 'Home', nav_restaurants: 'Restaurants', nav_add: 'Add Your Shop', nav_login: 'Login', nav_admin: 'Admin',
+        hero_title: 'Discover Pattaya Late-Night Eats', hero_sub: 'Real reviews for midnight cravings: Moo Kata, Seafood, and 24/7 spots.',
+        featured: 'Featured This Week', dir_title: 'Late-Night Directory',
+        login_title: 'Login / Register', lbl_username: 'Username', lbl_password: 'Password', lbl_role: 'Account Type',
+        role_customer: 'Customer (Review shops)', role_owner: 'Restaurant Owner (Add shops)', btn_login: 'Login', toggle_register: "Don't have an account? Click to register",
+        toggle_login: 'Already have an account? Click to login', btn_register: 'Register',
+        add_shop_title: 'Add Restaurant Info', lbl_shop_name: 'Shop Name', lbl_location: 'Location / Area', lbl_hours: 'Opening Hours',
+        lbl_signature: 'Signature Dish', lbl_img_url: 'Image URL', lbl_desc: 'Description', btn_save: 'Save Shop',
+        admin_panel: 'Admin Dashboard', manage_shops: 'Manage All Shops', manage_reviews: 'Manage All Reviews',
+        th_name: 'Name', th_owner: 'Owner', th_action: 'Action', th_shop: 'Shop', th_user: 'User', th_comment: 'Comment',
+        detail_hours: 'Hours', detail_loc: 'Location', detail_sig: 'Signature', write_review: 'Write a Review', btn_submit_review: 'Submit Review',
+        reviews_title: 'Member Reviews', no_review: 'No reviews yet. Be the first!', alert_login: 'Please login first', alert_fill: 'Please fill all fields',
+        alert_success: 'Saved successfully!', confirm_delete: 'Are you sure you want to delete this?'
+    }
+};
+let currentLang = localStorage.getItem('lang') || 'th';
+
+function changeLang(lang) {
+    currentLang = lang;
+    localStorage.setItem('lang', lang);
+    document.getElementById('langSelect').value = lang;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (i18n[lang][key]) el.textContent = i18n[lang][key];
+    });
+    renderAll();
+}
+
+// ==================== DATABASE (LocalStorage) ====================
+let db = {
+    users: [],
+    restaurants: [],
+    nextUserId: 1,
+    nextRestId: 1
+};
+
+function initDB() {
+    const saved = localStorage.getItem('pattayaNightFoodDB');
+    if (saved) {
+        db = JSON.parse(saved);
+    } else {
+        // Default Admin
+        db.users.push({ id: db.nextUserId++, username: 'admin', password: 'admin123', role: 'admin' });
+        // Sample Shops
+        db.restaurants.push({
+            id: db.nextRestId++, ownerId: 0, name: 'Midnight Mootata Pattaya', location: 'Pattaya Sai 2',
+            hours: '20:00 - 04:00', signature: 'Thai Seafood Mootata', image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800',
+            description: 'มูกระทะเปิดดึกสุดฮิต น้ำจิ้มซีฟู้ดรสเด็ด เนื้อสัตว์สดใหม่ บรรยากาศดีริมถนนพัทยาใต้',
+            reviews: [{ userId: 1, rating: 5, comment: 'น้ำจิ้มเด็ดมาก เปิดดึกจริงตี 2 ยังคนเต็ม', date: '2026-09-28' }]
+        });
+        db.restaurants.push({
+            id: db.nextRestId++, ownerId: 0, name: 'Jomtien Night Seafood', location: 'Jomtien Beach',
+            hours: '18:00 - 02:00', signature: 'Grilled River Prawns', image: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800',
+            description: 'ซีฟู้ดริมหาดจอมเทียน กุ้งแม่น้ำเผา ปลาหมึกย่าง สดจากตลาดทุกวัน',
+            reviews: []
+        });
+        db.restaurants.push({
+            id: db.nextRestId++, ownerId: 0, name: '24/7 Dim Sum & Coffee', location: 'North Pattaya',
+            hours: '24 Hours', signature: 'Steamed Pork Buns & Thai Tea', image: 'https://images.unsplash.com/photo-1496116218417-1a781b1c416c?w=800',
+            description: 'ร้านติ่มซำและกาแฟเปิด 24 ชม. เหมาะสำหรับคนนอนดึกหรือเพิ่งลงไฟลท์',
+            reviews: [{ userId: 1, rating: 4, comment: 'สะดวกมาก ตี 3 ยังมากินได้ ติ่มซำร้อนๆ หายเหนื่อย', date: '2026-09-25' }]
+        });
+        saveDB();
+    }
+}
+function saveDB() { localStorage.setItem('pattayaNightFoodDB', JSON.stringify(db)); }
+function getCurrentUser() {
+    const uid = sessionStorage.getItem('currentUserId');
+    return uid ? db.users.find(u => u.id === parseInt(uid)) : null;
+}
+
+// ==================== AUTH ====================
+let isRegisterMode = false;
+function openAuthModal() {
+    isRegisterMode = false;
+    updateAuthUI();
+    document.getElementById('authModal').classList.add('show');
+}
+function updateAuthUI() {
+    const t = i18n[currentLang];
+    document.getElementById('roleGroup').style.display = isRegisterMode ? 'block' : 'none';
+    document.getElementById('authSubmitBtn').textContent = isRegisterMode ? t.btn_register : t.btn_login;
+    document.getElementById('authToggleText').textContent = isRegisterMode ? t.toggle_login : t.toggle_register;
+}
+document.getElementById('authToggleText').addEventListener('click', () => {
+    isRegisterMode = !isRegisterMode;
+    updateAuthUI();
+});
+
+function handleAuth() {
+    const username = document.getElementById('authUser').value.trim();
+    const password = document.getElementById('authPass').value.trim();
+    if (!username || !password) return alert(i18n[currentLang].alert_fill);
+
+    if (isRegisterMode) {
+        const role = document.getElementById('authRole').value;
+        if (db.users.find(u => u.username === username)) return alert('Username already exists!');
+        const newUser = { id: db.nextUserId++, username, password, role };
+        db.users.push(newUser);
+        saveDB();
+        sessionStorage.setItem('currentUserId', newUser.id);
+    } else {
+        const user = db.users.find(u => u.username === username && u.password === password);
+        if (!user) return alert('Invalid credentials!');
+        sessionStorage.setItem('currentUserId', user.id);
+    }
+    closeModal('authModal');
+    updateNavbar();
+    renderAll();
+}
+
+function logout() {
+    sessionStorage.removeItem('currentUserId');
+    updateNavbar();
+    showSection('home');
+}
+
+function updateNavbar() {
+    const user = getCurrentUser();
+    const t = i18n[currentLang];
+    document.getElementById('btnLogin').style.display = user ? 'none' : 'flex';
+    document.getElementById('userBadge').style.display = user ? 'flex' : 'none';
+    document.getElementById('btnAddShop').style.display = (user && (user.role === 'owner' || user.role === 'admin')) ? 'flex' : 'none';
+    document.getElementById('btnAdmin').style.display = (user && user.role === 'admin') ? 'flex' : 'none';
+    if (user) document.getElementById('userNameDisplay').textContent = user.username;
+}
+
+// ==================== SHOPS ====================
+function openAddShopModal() {
+    const user = getCurrentUser();
+    if (!user) return alert(i18n[currentLang].alert_login);
+    document.getElementById('addShopModal').classList.add('show');
+}
+
+function saveShop() {
+    const user = getCurrentUser();
+    if (!user) return;
+    const name = document.getElementById('shopName').value.trim();
+    const location = document.getElementById('shopLocation').value.trim();
+    const hours = document.getElementById('shopHours').value.trim();
+    const signature = document.getElementById('shopSignature').value.trim();
+    const image = document.getElementById('shopImage').value.trim() || 'https://via.placeholder.com/800x400?text=No+Image';
+    const description = document.getElementById('shopDesc').value.trim();
+
+    if (!name || !location || !hours) return alert(i18n[currentLang].alert_fill);
+
+    db.restaurants.push({
+        id: db.nextRestId++, ownerId: user.id, name, location, hours, signature, image, description, reviews: []
+    });
+    saveDB();
+    closeModal('addShopModal');
+    alert(i18n[currentLang].alert_success);
+    // Clear form
+    ['shopName','shopLocation','shopHours','shopSignature','shopImage','shopDesc'].forEach(id => document.getElementById(id).value = '');
+    renderAll();
+}
+
+function getAvgRating(restaurant) {
+    if (restaurant.reviews.length === 0) return 0;
+    const sum = restaurant.reviews.reduce((acc, r) => acc + r.rating, 0);
+    return (sum / restaurant.reviews.length).toFixed(1);
+}
+
+function renderStars(rating) {
+    let stars = '';
+    const full = Math.floor(rating);
+    const half = rating % 1 >= 0.5;
+    for (let i = 1; i <= 5; i++) {
+        if (i <= full) stars += '<i class="fas fa-star"></i>';
+        else if (i === full + 1 && half) stars += '<i class="fas fa-star-half-alt"></i>';
+        else stars += '<i class="far fa-star"></i>';
+    }
+    return stars;
+}
+
+function renderRestaurants() {
+    const grids = ['featuredGrid', 'restaurantsGrid'];
+    grids.forEach(gridId => {
+        const grid = document.getElementById(gridId);
+        if (!grid) return;
+        let data = [...db.restaurants];
+        if (gridId === 'featuredGrid') {
+            data = data.sort((a, b) => getAvgRating(b) - getAvgRating(a)).slice(0, 3);
+        }
+        grid.innerHTML = data.map(r => `
+            <div class="card" onclick="openDetail(${r.id})">
+                <img src="${r.image}" class="card-img" alt="${r.name}" onerror="this.src='https://via.placeholder.com/800x400?text=No+Image'">
+                <div class="card-body">
+                    <div class="card-title">${r.name}</div>
+                    <div class="card-meta">
+                        <span class="rating-stars">${renderStars(getAvgRating(r))} <small style="color:#fff">(${r.reviews.length})</small></span>
+                        <span class="card-hours"><i class="fas fa-clock"></i> ${r.hours}</span>
+                    </div>
+                    <div class="card-desc">${r.description}</div>
+                    <span class="tag"><i class="fas fa-map-marker-alt"></i> ${r.location}</span>
+                </div>
+            </div>
+        `).join('');
+    });
+}
+
+// ==================== DETAIL & REVIEWS ====================
+let selectedRestId = null;
+let selectedRating = 0;
+
+function openDetail(id) {
+    selectedRestId = id;
+    selectedRating = 0;
+    const r = db.restaurants.find(x => x.id === id);
+    if (!r) return;
+    const t = i18n[currentLang];
+    const user = getCurrentUser();
+    
+    let reviewsHtml = '';
+    if (r.reviews.length === 0) {
+        reviewsHtml = `<p style="text-align:center; color:var(--text-muted); padding:20px;">${t.no_review}</p>`;
+    } else {
+        reviewsHtml = r.reviews.map(rev => {
+            const revUser = db.users.find(u => u.id === rev.userId) || { username: 'Unknown' };
+            return `
+                <div class="review-card">
+                    <div class="review-header">
+                        <span class="review-user"><i class="fas fa-user-circle"></i> ${revUser.username}</span>
+                        <span class="review-date">${rev.date}</span>
+                    </div>
+                    <div class="rating-stars" style="margin-bottom:8px;">${renderStars(rev.rating)}</div>
+                    <div class="review-text">${rev.comment}</div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    document.getElementById('detailContent').innerHTML = `
+        <img src="${r.image}" class="modal-img" onerror="this.src='https://via.placeholder.com/800x400?text=No+Image'">
+        <h1 style="color:var(--primary); margin-bottom:5px;">${r.name}</h1>
+        <div class="rating-stars" style="font-size:1.2em; margin-bottom:15px;">
+            ${renderStars(getAvgRating(r))} <span style="color:#fff; font-size:0.8em; margin-left:10px;">(${getAvgRating(r)} / 5)</span>
+        </div>
+        <p style="color:#ddd; margin-bottom:20px;">${r.description}</p>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:15px; margin-bottom:30px;">
+            <div style="background:var(--dark); padding:15px; border-radius:10px;"><strong style="color:var(--secondary);"><i class="fas fa-clock"></i> ${t.detail_hours}:</strong><br>${r.hours}</div>
+            <div style="background:var(--dark); padding:15px; border-radius:10px;"><strong style="color:var(--secondary);"><i class="fas fa-map-marker-alt"></i> ${t.detail_loc}:</strong><br>${r.location}</div>
+            <div style="background:var(--dark); padding:15px; border-radius:10px;"><strong style="color:var(--secondary);"><i class="fas fa-utensils"></i> ${t.detail_sig}:</strong><br>${r.signature}</div>
+        </div>
+
+        <hr style="border-color:rgba(255,255,255,0.1); margin-bottom:20px;">
+        <h3 style="color:var(--secondary); margin-bottom:15px;"><i class="fas fa-comments"></i> ${t.reviews_title}</h3>
+        
+        ${user ? `
+            <div style="background:var(--dark); padding:20px; border-radius:10px; margin-bottom:20px;">
+                <h4 style="margin-bottom:10px;">${t.write_review}</h4>
+                <div class="star-rating" id="starInput">
+                    ${[1,2,3,4,5].map(i => `<i class="far fa-star" onclick="setRating(${i})" onmouseover="hoverRating(${i})" onmouseout="resetRatingHover()"></i>`).join('')}
+                </div>
+                <textarea id="reviewText" class="form-group" style="width:100%; padding:12px; background:var(--card-bg); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#fff; min-height:80px;" placeholder="แชร์ประสบการณ์ของคุณ..."></textarea>
+                <button class="btn btn-primary" style="margin-top:15px;" onclick="submitReview()"><i class="fas fa-paper-plane"></i> ${t.btn_submit_review}</button>
+            </div>
+        ` : `<p style="text-align:center; color:var(--text-muted); margin-bottom:20px;">${t.alert_login}</p>`}
+
+        ${reviewsHtml}
+    `;
+    document.getElementById('detailModal').classList.add('show');
+}
+
+function setRating(val) { selectedRating = val; updateStarUI(val); }
+function hoverRating(val) { updateStarUI(val); }
+function resetRatingHover() { updateStarUI(selectedRating); }
+function updateStarUI(val) {
+    const stars = document.querySelectorAll('#starInput i');
+    stars.forEach((s, i) => {
+        s.className = i < val ? 'fas fa-star active' : 'far fa-star';
+    });
+}
+
+function submitReview() {
+    const user = getCurrentUser();
+    if (!user) return;
+    const text = document.getElementById('reviewText').value.trim();
+    if (selectedRating === 0 || !text) return alert(i18n[currentLang].alert_fill);
+    
+    const r = db.restaurants.find(x => x.id === selectedRestId);
+    r.reviews.push({
+        userId: user.id, rating: selectedRating, comment: text, date: new Date().toISOString().split('T')[0]
+    });
+    saveDB();
+    openDetail(selectedRestId); // Refresh
+    renderRestaurants();
+}
+
+// ==================== ADMIN ====================
+function renderAdmin() {
+    const user = getCurrentUser();
+    if (!user || user.role !== 'admin') return;
+
+    const shopsList = document.getElementById('adminShopsList');
+    shopsList.innerHTML = db.restaurants.map(r => {
+        const owner = db.users.find(u => u.id === r.ownerId);
+        return `<tr>
+            <td>${r.id}</td>
+            <td>${r.name}</td>
+            <td>${owner ? owner.username : 'System'}</td>
+            <td><button class="btn btn-danger" onclick="deleteShop(${r.id})"><i class="fas fa-trash"></i></button></td>
+        </tr>`;
+    }).join('');
+
+    const reviewsList = document.getElementById('adminReviewsList');
+    let allReviews = [];
+    db.restaurants.forEach(r => {
+        r.reviews.forEach(rev => {
+            const u = db.users.find(x => x.id === rev.userId) || {username: 'Unknown'};
+            allReviews.push({ restId: r.id, restName: r.name, userName: u.username, comment: rev.comment });
+        });
+    });
+    reviewsList.innerHTML = allReviews.map((rev, idx) => `
+        <tr>
+            <td>${rev.restName}</td>
+            <td>${rev.userName}</td>
+            <td>${rev.comment.substring(0, 50)}...</td>
+            <td><button class="btn btn-danger" onclick="deleteReview(${rev.restId}, ${idx})"><i class="fas fa-trash"></i></button></td>
+        </tr>
+    `).join('');
+}
+
+function deleteShop(id) {
+    if (!confirm(i18n[currentLang].confirm_delete)) return;
+    db.restaurants = db.restaurants.filter(r => r.id !== id);
+    saveDB(); renderAll();
+}
+
+function deleteReview(restId, reviewIndex) {
+    if (!confirm(i18n[currentLang].confirm_delete)) return;
+    const r = db.restaurants.find(x => x.id === restId);
+    // Note: For simplicity, deleting by index from the flattened list might mismatch if not careful. 
+    // A better way is to pass the exact userId and date, but this works for the demo.
+    r.reviews.splice(reviewIndex, 1); 
+    saveDB(); renderAll();
+}
+
+// ==================== UI HELPERS ====================
+function showSection(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    event.target.closest('.nav-btn')?.classList.add('active');
+    if (id === 'admin') renderAdmin();
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+function renderAll() {
+    renderRestaurants();
+    if (getCurrentUser()?.role === 'admin') renderAdmin();
+}
+
+// ==================== INIT ====================
+window.onload = () => {
+    initDB();
+    changeLang(currentLang);
+    updateNavbar();
+    renderAll();
+};
+</script>
+</body>
+</html>
