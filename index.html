@@ -141,7 +141,7 @@ a { text-decoration: none; color: inherit; }
     <div class="logo-text" onclick="showSection('home', event)"><i class="fas fa-moon"></i> Yamdook-Pattaya</div>
     <div class="lang-select">
         <select id="langSelect" onchange="changeLang(this.value)">
-            <option value="th">🇹🇭 TH</option>
+            <option value="th">🇹 TH</option>
             <option value="en">🇬 EN</option>
         </select>
     </div>
@@ -188,7 +188,7 @@ a { text-decoration: none; color: inherit; }
     </div>
 
     <div class="tabs">
-        <button class="tab active" onclick="showAdminTab('github', event)">🔧 <span data-i18n="tab_github">ตั้งค่า GitHub</span></button>
+        <button class="tab active" onclick="showAdminTab('github', event)"> <span data-i18n="tab_github">ตั้งค่า GitHub</span></button>
         <button class="tab" onclick="showAdminTab('shops', event)">🏪 <span data-i18n="tab_shops">จัดการร้าน</span></button>
         <button class="tab" onclick="showAdminTab('reviews', event)">⭐ <span data-i18n="tab_reviews">จัดการรีวิว</span></button>
         <button class="tab" onclick="showAdminTab('users', event)">👥 <span data-i18n="tab_users">จัดการสมาชิก</span></button>
@@ -495,72 +495,93 @@ function changeLang(lang) {
         }
     });
     
-    // ✅ เพิ่ม: อัปเดต Navbar, Badge และ Dynamic Content
     updateNavbar();
     renderRestaurants();
     renderAll();
     
-    // ✅ เพิ่ม: ถ้าเปิดหน้า Admin อยู่ ให้ render ใหม่
     if (document.getElementById('admin').classList.contains('active')) {
         renderAdminShops();
         renderAdminReviews();
         renderAdminUsers();
     }
     
-    // ✅ เพิ่ม: ถ้าเปิด Modal รายละเอียดร้านอยู่ ให้ render ใหม่
     if (document.getElementById('detailModal').classList.contains('show') && selectedRestId) {
         openDetail(selectedRestId);
     }
 }
 
+let db = { users: [], restaurants: [], nextUserId: 1, nextRestId: 1 };
+let tempImages = [];
+let currentOTP = null;
+let pendingUser = null;
+
 function initDB() {
     const saved = localStorage.getItem('yamdookPattayaDB');
+    let needsReset = false;
+    
     if (saved) {
         db = JSON.parse(saved);
-        db.users.forEach(u => {
-            if (!u.email) u.email = '';
-            if (u.verified === undefined) u.verified = u.role === 'admin';
-        });
-        db.restaurants.forEach(r => {
-            if (!r.social) r.social = {};
-            if (!r.delivery) r.delivery = {};
-            if (!r.mapUrl) r.mapUrl = '';
-            if (!r.images) r.images = r.image ? [r.image] : [];
-        });
-        saveDB();
-    } else {
+        
+        if (db.restaurants && db.restaurants.length > 0) {
+            if (!('nameEn' in db.restaurants[0])) {
+                console.log('Detected old data structure, resetting...');
+                needsReset = true;
+            }
+        }
+        
+        if (!needsReset) {
+            db.users.forEach(u => {
+                if (!u.email) u.email = '';
+                if (u.verified === undefined) u.verified = u.role === 'admin';
+            });
+            db.restaurants.forEach(r => {
+                if (!r.social) r.social = {};
+                if (!r.delivery) r.delivery = {};
+                if (!r.mapUrl) r.mapUrl = '';
+                if (!r.images) r.images = r.image ? [r.image] : [];
+                if (!r.nameEn) r.nameEn = r.name;
+                if (!r.descriptionEn) r.descriptionEn = r.description;
+                if (!r.locationEn) r.locationEn = r.location;
+                if (!r.signatureEn) r.signatureEn = r.signature || '';
+            });
+            saveDB();
+        }
+    }
+    
+    if (!saved || needsReset) {
+        db = { users: [], restaurants: [], nextUserId: 1, nextRestId: 1 };
         db.users.push({ id: db.nextUserId++, username: 'admin', password: 'admin123', role: 'admin', email: 'admin@yamdook.com', verified: true });
         
         const sampleShops = [
-    { 
-        name: 'มูกระทะตีแตก', nameEn: 'Moo Kata Tee Taek',
-        location: 'พัทยาใต้', locationEn: 'South Pattaya',
-        hours: '20:00 - 04:00', 
-        signature: 'กุ้งแม่น้ำเผา, น้ำจิ้มซีฟู้ดมะนาวดอง', 
-        signatureEn: 'Grilled River Prawn, Seafood Dipping Sauce',
-        image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800',
-        images: ['https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800', 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800'],
-        description: 'มูกระทะเปิดดึกสุดฮิต น้ำจิ้มซีฟู้ดรสเด็ด เนื้อสัตว์สดใหม่ บรรยากาศดีริมถนนพัทยาใต้',
-        descriptionEn: 'Popular late-night Moo Kata with delicious seafood dipping sauce, fresh meat, great atmosphere on South Pattaya road.',
-        social: { facebook: 'https://facebook.com/mootatatpataya', tiktok: 'https://tiktok.com/@mootatat', line: '@mootatat', youtube: '' },
-        mapUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3875.0!2d100.8166!3d12.9236!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTLCsDU1JzI1LjAiTiAxMDDCsDQ4JzU5LjgiRQ!5e0!3m2!1sth!2sth!4v1234567890',
-        delivery: { lineman: 'https://lineman.com/m/mootatat', grab: '', shopee: '' }
-    },
-    { 
-        name: 'ซีฟู้ดจอมเทียนยามวิกาล', nameEn: 'Jomtien Midnight Seafood',
-        location: 'หาดจอมเทียน', locationEn: 'Jomtien Beach',
-        hours: '18:00 - 02:00', 
-        signature: 'กุ้งแม่น้ำเผา, ปูผัดผงกะหรี่', 
-        signatureEn: 'Grilled River Prawn, Curry Powder Crab',
-        image: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800',
-        images: ['https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800'],
-        description: 'ซีฟู้ดริมหาดจอมเทียน กุ้งแม่น้ำเผา ปลาหมึกย่าง สดจากตลาดทุกวัน รับลมทะเล',
-        descriptionEn: 'Seafood by Jomtien Beach, grilled river prawns, squid, fresh from market daily with sea breeze.',
-        social: { facebook: '', tiktok: '', line: '@jomtienfood', youtube: '' },
-        mapUrl: '',
-        delivery: { lineman: '', grab: '', shopee: '' }
-    }
-];
+            { 
+                name: 'มูกระทะตีแตก', nameEn: 'Moo Kata Tee Taek',
+                location: 'พัทยาใต้', locationEn: 'South Pattaya',
+                hours: '20:00 - 04:00', 
+                signature: 'กุ้งแม่น้ำเผา, น้ำจิ้มซีฟู้ดมะนาวดอง', 
+                signatureEn: 'Grilled River Prawn, Seafood Dipping Sauce',
+                image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800',
+                images: ['https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800', 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800'],
+                description: 'มูกระทะเปิดดึกสุดฮิต น้ำจิ้มซีฟู้ดรสเด็ด เนื้อสัตว์สดใหม่ บรรยากาศดีริมถนนพัทยาใต้',
+                descriptionEn: 'Popular late-night Moo Kata with delicious seafood dipping sauce, fresh meat, great atmosphere on South Pattaya road.',
+                social: { facebook: 'https://facebook.com/mootatatpataya', tiktok: 'https://tiktok.com/@mootatat', line: '@mootatat', youtube: '' },
+                mapUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3875.0!2d100.8166!3d12.9236!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTLCsDU1JzI1LjAiTiAxMDDCsDQ4JzU5LjgiRQ!5e0!3m2!1sth!2sth!4v1234567890',
+                delivery: { lineman: 'https://lineman.com/m/mootatat', grab: '', shopee: '' }
+            },
+            { 
+                name: 'ซีฟู้ดจอมเทียนยามวิกาล', nameEn: 'Jomtien Midnight Seafood',
+                location: 'หาดจอมเทียน', locationEn: 'Jomtien Beach',
+                hours: '18:00 - 02:00', 
+                signature: 'กุ้งแม่น้ำเผา, ปูผัดผงกะหรี่', 
+                signatureEn: 'Grilled River Prawn, Curry Powder Crab',
+                image: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800',
+                images: ['https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800'],
+                description: 'ซีฟู้ดริมหาดจอมเทียน กุ้งแม่น้ำเผา ปลาหมึกย่าง สดจากตลาดทุกวัน รับลมทะเล',
+                descriptionEn: 'Seafood by Jomtien Beach, grilled river prawns, squid, fresh from market daily with sea breeze.',
+                social: { facebook: '', tiktok: '', line: '@jomtienfood', youtube: '' },
+                mapUrl: '',
+                delivery: { lineman: '', grab: '', shopee: '' }
+            }
+        ];
         
         sampleShops.forEach(shop => {
             db.restaurants.push({ id: db.nextRestId++, ownerId: 0, ...shop, reviews: [] });
@@ -896,7 +917,7 @@ function renderDeliveryLinks(delivery) {
     if (!delivery) return '';
     let html = '';
     if (delivery.lineman) html += `<a href="${delivery.lineman}" target="_blank" class="delivery-btn lineman">🟦 LINE MAN</a>`;
-    if (delivery.grab) html += `<a href="${delivery.grab}" target="_blank" class="delivery-btn grab">🟩 Grab</a>`;
+    if (delivery.grab) html += `<a href="${delivery.grab}" target="_blank" class="delivery-btn grab"> Grab</a>`;
     if (delivery.shopee) html += `<a href="${delivery.shopee}" target="_blank" class="delivery-btn shopee">🟧 Shopee Food</a>`;
     return html ? `<div class="delivery-links">${html}</div>` : '';
 }
@@ -920,27 +941,26 @@ function renderRestaurants() {
             data = data.sort((a, b) => getAvgRating(b) - getAvgRating(a)).slice(0, 6);
         }
         grid.innerHTML = data.map(r => {
-    // ✅ เลือกชื่อและคำอธิบายตามภาษา
-    const displayName = currentLang === 'en' && r.nameEn ? r.nameEn : r.name;
-    const displayDesc = currentLang === 'en' && r.descriptionEn ? r.descriptionEn : r.description;
-    const displayLoc = currentLang === 'en' && r.locationEn ? r.locationEn : r.location;
-    const displaySig = currentLang === 'en' && r.signatureEn ? r.signatureEn : r.signature;
-    
-    return `
-    <div class="card" onclick="openDetail(${r.id})">
-        <img src="${r.image}" class="card-img" alt="${displayName}" onerror="this.src='https://via.placeholder.com/800x400?text=No+Image'">
-        <div class="card-body">
-            <div class="card-title">${displayName}</div>
-            <div class="card-meta">
-                <span class="rating-stars">${renderStars(getAvgRating(r))} <small style="color:#fff">(${r.reviews.length})</small></span>
-                <span class="card-hours"><i class="fas fa-clock"></i> ${r.hours}</span>
-            </div>
-            <div class="card-desc">${displayDesc}</div>
-            <span class="tag"><i class="fas fa-map-marker-alt"></i> ${displayLoc}</span>
-            ${renderDeliveryBadges(r.delivery)}
-        </div>
-    </div>`;
-}).join('');
+            const displayName = currentLang === 'en' && r.nameEn ? r.nameEn : r.name;
+            const displayDesc = currentLang === 'en' && r.descriptionEn ? r.descriptionEn : r.description;
+            const displayLoc = currentLang === 'en' && r.locationEn ? r.locationEn : r.location;
+            const displaySig = currentLang === 'en' && r.signatureEn ? r.signatureEn : r.signature;
+            
+            return `
+            <div class="card" onclick="openDetail(${r.id})">
+                <img src="${r.image}" class="card-img" alt="${displayName}" onerror="this.src='https://via.placeholder.com/800x400?text=No+Image'">
+                <div class="card-body">
+                    <div class="card-title">${displayName}</div>
+                    <div class="card-meta">
+                        <span class="rating-stars">${renderStars(getAvgRating(r))} <small style="color:#fff">(${r.reviews.length})</small></span>
+                        <span class="card-hours"><i class="fas fa-clock"></i> ${r.hours}</span>
+                    </div>
+                    <div class="card-desc">${displayDesc}</div>
+                    <span class="tag"><i class="fas fa-map-marker-alt"></i> ${displayLoc}</span>
+                    ${renderDeliveryBadges(r.delivery)}
+                </div>
+            </div>`;
+        }).join('');
     });
 }
 
@@ -1030,14 +1050,12 @@ function openDetail(id) {
         ${socialHtml}
     ` : '';
 
-        // ✅ 1. กำหนดตัวแปรสำหรับเลือกภาษา (ถ้าเป็น EN และมีข้อมูล EN ให้ใช้ข้อมูล EN)
     const displayName = currentLang === 'en' && r.nameEn ? r.nameEn : r.name;
     const displayDesc = currentLang === 'en' && r.descriptionEn ? r.descriptionEn : r.description;
     const displayLoc = currentLang === 'en' && r.locationEn ? r.locationEn : r.location;
     const displaySig = currentLang === 'en' && r.signatureEn ? r.signatureEn : (r.signature || '-');
     const reviewPlaceholder = currentLang === 'en' ? 'Share your experience...' : 'แชร์ประสบการณ์ของคุณ...';
 
-    // ✅ 2. ส่วนของ Delivery
     const deliveryHtml = renderDeliveryLinks(r.delivery);
     const deliverySection = deliveryHtml ? `
         <hr style="border-color:rgba(255,255,255,0.1); margin:20px 0;">
@@ -1045,7 +1063,6 @@ function openDetail(id) {
         ${deliveryHtml}
     ` : '';
 
-    // ✅ 3. สร้าง HTML โดยนำตัวแปรที่เลือกภาษามาใช้
     document.getElementById('detailContent').innerHTML = `
         <img src="${r.image}" class="modal-img" onerror="this.src='https://via.placeholder.com/800x400?text=No+Image'">
         <h1 style="color:var(--primary); margin-bottom:5px;">${displayName}</h1>
