@@ -495,18 +495,23 @@ function changeLang(lang) {
         }
     });
     
+    // ✅ เพิ่ม: อัปเดต Navbar, Badge และ Dynamic Content
+    updateNavbar();
+    renderRestaurants();
     renderAll();
     
-    // ✅ แก้ไข: ถ้าเปิดหน้ารายละเอียดร้านอยู่ ให้เรนเดอร์ใหม่เพื่อเปลี่ยนภาษาใน Modal
+    // ✅ เพิ่ม: ถ้าเปิดหน้า Admin อยู่ ให้ render ใหม่
+    if (document.getElementById('admin').classList.contains('active')) {
+        renderAdminShops();
+        renderAdminReviews();
+        renderAdminUsers();
+    }
+    
+    // ✅ เพิ่ม: ถ้าเปิด Modal รายละเอียดร้านอยู่ ให้ render ใหม่
     if (document.getElementById('detailModal').classList.contains('show') && selectedRestId) {
         openDetail(selectedRestId);
     }
 }
-
-let db = { users: [], restaurants: [], nextUserId: 1, nextRestId: 1 };
-let tempImages = [];
-let currentOTP = null;
-let pendingUser = null;
 
 function initDB() {
     const saved = localStorage.getItem('yamdookPattayaDB');
@@ -527,27 +532,35 @@ function initDB() {
         db.users.push({ id: db.nextUserId++, username: 'admin', password: 'admin123', role: 'admin', email: 'admin@yamdook.com', verified: true });
         
         const sampleShops = [
-            { 
-                name: 'มูกระทะตีแตก', location: 'พัทยาใต้', hours: '20:00 - 04:00', 
-                signature: 'กุ้งแม่น้ำเผา, น้ำจิ้มซีฟู้ดมะนาวดอง', 
-                image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800',
-                images: ['https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800', 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800'],
-                description: 'มูกระทะเปิดดึกสุดฮิต น้ำจิ้มซีฟู้ดรสเด็ด เนื้อสัตว์สดใหม่ บรรยากาศดีริมถนนพัทยาใต้',
-                social: { facebook: 'https://facebook.com/mootatatpataya', tiktok: 'https://tiktok.com/@mootatat', line: '@mootatat', youtube: '' },
-                mapUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3875.0!2d100.8166!3d12.9236!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTLCsDU1JzI1LjAiTiAxMDDCsDQ4JzU5LjgiRQ!5e0!3m2!1sth!2sth!4v1234567890',
-                delivery: { lineman: 'https://lineman.com/m/mootatat', grab: '', shopee: '' }
-            },
-            { 
-                name: 'ซีฟู้ดจอมเทียนยามวิกาล', location: 'หาดจอมเทียน', hours: '18:00 - 02:00', 
-                signature: 'กุ้งแม่น้ำเผา, ปูผัดผงกะหรี่', 
-                image: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800',
-                images: ['https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800'],
-                description: 'ซีฟู้ดริมหาดจอมเทียน กุ้งแม่น้ำเผา ปลาหมึกย่าง สดจากตลาดทุกวัน รับลมทะเล',
-                social: { facebook: '', tiktok: '', line: '@jomtienfood', youtube: '' },
-                mapUrl: '',
-                delivery: { lineman: '', grab: '', shopee: '' }
-            }
-        ];
+    { 
+        name: 'มูกระทะตีแตก', nameEn: 'Moo Kata Tee Taek',
+        location: 'พัทยาใต้', locationEn: 'South Pattaya',
+        hours: '20:00 - 04:00', 
+        signature: 'กุ้งแม่น้ำเผา, น้ำจิ้มซีฟู้ดมะนาวดอง', 
+        signatureEn: 'Grilled River Prawn, Seafood Dipping Sauce',
+        image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800',
+        images: ['https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800', 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800'],
+        description: 'มูกระทะเปิดดึกสุดฮิต น้ำจิ้มซีฟู้ดรสเด็ด เนื้อสัตว์สดใหม่ บรรยากาศดีริมถนนพัทยาใต้',
+        descriptionEn: 'Popular late-night Moo Kata with delicious seafood dipping sauce, fresh meat, great atmosphere on South Pattaya road.',
+        social: { facebook: 'https://facebook.com/mootatatpataya', tiktok: 'https://tiktok.com/@mootatat', line: '@mootatat', youtube: '' },
+        mapUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3875.0!2d100.8166!3d12.9236!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTLCsDU1JzI1LjAiTiAxMDDCsDQ4JzU5LjgiRQ!5e0!3m2!1sth!2sth!4v1234567890',
+        delivery: { lineman: 'https://lineman.com/m/mootatat', grab: '', shopee: '' }
+    },
+    { 
+        name: 'ซีฟู้ดจอมเทียนยามวิกาล', nameEn: 'Jomtien Midnight Seafood',
+        location: 'หาดจอมเทียน', locationEn: 'Jomtien Beach',
+        hours: '18:00 - 02:00', 
+        signature: 'กุ้งแม่น้ำเผา, ปูผัดผงกะหรี่', 
+        signatureEn: 'Grilled River Prawn, Curry Powder Crab',
+        image: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800',
+        images: ['https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800'],
+        description: 'ซีฟู้ดริมหาดจอมเทียน กุ้งแม่น้ำเผา ปลาหมึกย่าง สดจากตลาดทุกวัน รับลมทะเล',
+        descriptionEn: 'Seafood by Jomtien Beach, grilled river prawns, squid, fresh from market daily with sea breeze.',
+        social: { facebook: '', tiktok: '', line: '@jomtienfood', youtube: '' },
+        mapUrl: '',
+        delivery: { lineman: '', grab: '', shopee: '' }
+    }
+];
         
         sampleShops.forEach(shop => {
             db.restaurants.push({ id: db.nextRestId++, ownerId: 0, ...shop, reviews: [] });
@@ -906,21 +919,28 @@ function renderRestaurants() {
         if (gridId === 'featuredGrid') {
             data = data.sort((a, b) => getAvgRating(b) - getAvgRating(a)).slice(0, 6);
         }
-        grid.innerHTML = data.map(r => `
-            <div class="card" onclick="openDetail(${r.id})">
-                <img src="${r.image}" class="card-img" alt="${r.name}" onerror="this.src='https://via.placeholder.com/800x400?text=No+Image'">
-                <div class="card-body">
-                    <div class="card-title">${r.name}</div>
-                    <div class="card-meta">
-                        <span class="rating-stars">${renderStars(getAvgRating(r))} <small style="color:#fff">(${r.reviews.length})</small></span>
-                        <span class="card-hours"><i class="fas fa-clock"></i> ${r.hours}</span>
-                    </div>
-                    <div class="card-desc">${r.description}</div>
-                    <span class="tag"><i class="fas fa-map-marker-alt"></i> ${r.location}</span>
-                    ${renderDeliveryBadges(r.delivery)}
-                </div>
+        grid.innerHTML = data.map(r => {
+    // ✅ เลือกชื่อและคำอธิบายตามภาษา
+    const displayName = currentLang === 'en' && r.nameEn ? r.nameEn : r.name;
+    const displayDesc = currentLang === 'en' && r.descriptionEn ? r.descriptionEn : r.description;
+    const displayLoc = currentLang === 'en' && r.locationEn ? r.locationEn : r.location;
+    const displaySig = currentLang === 'en' && r.signatureEn ? r.signatureEn : r.signature;
+    
+    return `
+    <div class="card" onclick="openDetail(${r.id})">
+        <img src="${r.image}" class="card-img" alt="${displayName}" onerror="this.src='https://via.placeholder.com/800x400?text=No+Image'">
+        <div class="card-body">
+            <div class="card-title">${displayName}</div>
+            <div class="card-meta">
+                <span class="rating-stars">${renderStars(getAvgRating(r))} <small style="color:#fff">(${r.reviews.length})</small></span>
+                <span class="card-hours"><i class="fas fa-clock"></i> ${r.hours}</span>
             </div>
-        `).join('');
+            <div class="card-desc">${displayDesc}</div>
+            <span class="tag"><i class="fas fa-map-marker-alt"></i> ${displayLoc}</span>
+            ${renderDeliveryBadges(r.delivery)}
+        </div>
+    </div>`;
+}).join('');
     });
 }
 
@@ -1010,6 +1030,14 @@ function openDetail(id) {
         ${socialHtml}
     ` : '';
 
+        // ✅ 1. กำหนดตัวแปรสำหรับเลือกภาษา (ถ้าเป็น EN และมีข้อมูล EN ให้ใช้ข้อมูล EN)
+    const displayName = currentLang === 'en' && r.nameEn ? r.nameEn : r.name;
+    const displayDesc = currentLang === 'en' && r.descriptionEn ? r.descriptionEn : r.description;
+    const displayLoc = currentLang === 'en' && r.locationEn ? r.locationEn : r.location;
+    const displaySig = currentLang === 'en' && r.signatureEn ? r.signatureEn : (r.signature || '-');
+    const reviewPlaceholder = currentLang === 'en' ? 'Share your experience...' : 'แชร์ประสบการณ์ของคุณ...';
+
+    // ✅ 2. ส่วนของ Delivery
     const deliveryHtml = renderDeliveryLinks(r.delivery);
     const deliverySection = deliveryHtml ? `
         <hr style="border-color:rgba(255,255,255,0.1); margin:20px 0;">
@@ -1017,17 +1045,18 @@ function openDetail(id) {
         ${deliveryHtml}
     ` : '';
 
+    // ✅ 3. สร้าง HTML โดยนำตัวแปรที่เลือกภาษามาใช้
     document.getElementById('detailContent').innerHTML = `
         <img src="${r.image}" class="modal-img" onerror="this.src='https://via.placeholder.com/800x400?text=No+Image'">
-        <h1 style="color:var(--primary); margin-bottom:5px;">${r.name}</h1>
+        <h1 style="color:var(--primary); margin-bottom:5px;">${displayName}</h1>
         <div class="rating-stars" style="font-size:1.2em; margin-bottom:15px;">
             ${renderStars(getAvgRating(r))} <span style="color:#fff; font-size:0.8em; margin-left:10px;">(${getAvgRating(r)} / 5)</span>
         </div>
-        <p style="color:#ddd; margin-bottom:20px;">${r.description}</p>
+        <p style="color:#ddd; margin-bottom:20px;">${displayDesc}</p>
         <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:15px; margin-bottom:30px;">
             <div style="background:var(--dark); padding:15px; border-radius:10px;"><strong style="color:var(--secondary);"><i class="fas fa-clock"></i> ${t.detail_hours}:</strong><br>${r.hours}</div>
-            <div style="background:var(--dark); padding:15px; border-radius:10px;"><strong style="color:var(--secondary);"><i class="fas fa-map-marker-alt"></i> ${t.detail_loc}:</strong><br>${r.location}</div>
-            <div style="background:var(--dark); padding:15px; border-radius:10px;"><strong style="color:var(--secondary);"><i class="fas fa-utensils"></i> ${t.detail_sig}:</strong><br>${r.signature || '-'}</div>
+            <div style="background:var(--dark); padding:15px; border-radius:10px;"><strong style="color:var(--secondary);"><i class="fas fa-map-marker-alt"></i> ${t.detail_loc}:</strong><br>${displayLoc}</div>
+            <div style="background:var(--dark); padding:15px; border-radius:10px;"><strong style="color:var(--secondary);"><i class="fas fa-utensils"></i> ${t.detail_sig}:</strong><br>${displaySig}</div>
         </div>
 
         ${galleryHtml}
@@ -1049,7 +1078,7 @@ function openDetail(id) {
                 <div class="star-rating" id="starInput">
                     ${[1,2,3,4,5].map(i => `<i class="far fa-star" onclick="setRating(${i})" onmouseover="hoverRating(${i})" onmouseout="resetRatingHover()"></i>`).join('')}
                 </div>
-                <textarea id="reviewText" style="width:100%; padding:12px; background:var(--card-bg); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#fff; min-height:80px;" placeholder="แชร์ประสบการณ์ของคุณ..."></textarea>
+                <textarea id="reviewText" style="width:100%; padding:12px; background:var(--card-bg); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#fff; min-height:80px;" placeholder="${reviewPlaceholder}"></textarea>
                 <button class="btn btn-primary" style="margin-top:15px;" onclick="submitReview()"><i class="fas fa-paper-plane"></i> ${t.btn_submit_review}</button>
             </div>
         `) : `<p style="text-align:center; color:var(--text-muted); margin-bottom:20px;">${t.alert_login}</p>`}
