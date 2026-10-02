@@ -434,7 +434,9 @@ const i18n = {
         alert_no_permission: 'คุณไม่มีสิทธิ์แก้ไขร้านนี้', alert_invalid_url: 'กรุณาใส่ URL ที่ขึ้นต้นด้วย http:// หรือ https://',
         alert_otp_wrong: '❌ รหัส OTP ไม่ถูกต้อง กรุณาลองใหม่',
         alert_welcome: '✅ ยืนยันอีเมลสำเร็จ! ยินดีต้อนรับสู่ Yamdook-Pattaya',
-        alert_verify_to_review: 'กรุณายืนยันอีเมลก่อนจึงจะสามารถรีวิวได้'
+        alert_verify_to_review: 'กรุณายืนยันอีเมลก่อนจึงจะสามารถรีวิวได้',
+        alert_already_reviewed: 'คุณได้รีวิวร้านนี้ไปแล้ว 1 ครั้ง',
+        already_reviewed: 'คุณได้รีวิวร้านนี้ไปแล้ว'
     },
     en: {
         nav_home: 'Home', nav_restaurants: 'Restaurants', nav_add: 'Add Your Shop', nav_login: 'Login', nav_admin: 'Admin',
@@ -472,7 +474,9 @@ const i18n = {
         alert_no_permission: 'You do not have permission to edit this shop', alert_invalid_url: 'Please enter a URL starting with http:// or https://',
         alert_otp_wrong: '❌ Incorrect OTP code. Please try again',
         alert_welcome: '✅ Email verified successfully! Welcome to Yamdook-Pattaya',
-        alert_verify_to_review: 'Please verify your email before writing a review'
+        alert_verify_to_review: 'Please verify your email before writing a review',
+        alert_already_reviewed: 'You have already reviewed this shop once',
+        already_reviewed: 'You have already reviewed this shop'
     }
 };
 let currentLang = localStorage.getItem('yamdookLang') || 'th';
@@ -482,7 +486,6 @@ function changeLang(lang) {
     localStorage.setItem('yamdookLang', lang);
     document.getElementById('langSelect').value = lang;
     
-    // อัปเดตทุก element ที่มี data-i18n
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
         if (i18n[lang][key]) {
@@ -925,6 +928,9 @@ function openDetail(id) {
     const t = i18n[currentLang];
     const user = getCurrentUser();
     
+    // ตรวจสอบว่า user นี้เคยรีวิวร้านนี้ไปแล้วหรือยัง (1 user รีวิวได้แค่ 1 ครั้ง)
+    const hasReviewed = user && r.reviews.some(rev => rev.userId === user.id);
+    
     let reviewsHtml = '';
     if (r.reviews.length === 0) {
         reviewsHtml = `<p style="text-align:center; color:var(--text-muted); padding:20px;">${t.no_review}</p>`;
@@ -1026,7 +1032,11 @@ function openDetail(id) {
         <hr style="border-color:rgba(255,255,255,0.1); margin:20px 0;">
         <h3 style="color:var(--secondary); margin-bottom:15px;"><i class="fas fa-comments"></i> ${t.reviews_title}</h3>
         
-        ${user ? `
+        ${user ? (hasReviewed ? `
+            <div style="background:var(--dark); padding:20px; border-radius:10px; margin-bottom:20px; text-align:center; color:var(--success); border: 1px solid var(--success);">
+                <i class="fas fa-check-circle"></i> ${t.already_reviewed}
+            </div>
+        ` : `
             <div style="background:var(--dark); padding:20px; border-radius:10px; margin-bottom:20px;">
                 <h4 style="margin-bottom:10px;">${t.write_review}</h4>
                 <div class="star-rating" id="starInput">
@@ -1035,7 +1045,7 @@ function openDetail(id) {
                 <textarea id="reviewText" style="width:100%; padding:12px; background:var(--card-bg); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#fff; min-height:80px;" placeholder="แชร์ประสบการณ์ของคุณ..."></textarea>
                 <button class="btn btn-primary" style="margin-top:15px;" onclick="submitReview()"><i class="fas fa-paper-plane"></i> ${t.btn_submit_review}</button>
             </div>
-        ` : `<p style="text-align:center; color:var(--text-muted); margin-bottom:20px;">${t.alert_login}</p>`}
+        `) : `<p style="text-align:center; color:var(--text-muted); margin-bottom:20px;">${t.alert_login}</p>`}
 
         ${reviewsHtml}
     `;
@@ -1065,6 +1075,13 @@ function submitReview() {
     if (selectedRating === 0 || !text) return alert(i18n[currentLang].alert_fill);
     
     const r = db.restaurants.find(x => x.id === selectedRestId);
+    if (!r) return;
+
+    // ตรวจสอบซ้ำอีกครั้งก่อนบันทึก (ป้องกัน Double Submit)
+    if (r.reviews.some(rev => rev.userId === user.id)) {
+        return alert(i18n[currentLang].alert_already_reviewed);
+    }
+    
     r.reviews.push({
         userId: user.id, rating: selectedRating, comment: text, date: new Date().toISOString().split('T')[0]
     });
