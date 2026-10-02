@@ -6,7 +6,7 @@
 <title>Yamdook-Pattaya | กินดึกพัทยา - รวมร้านเด็ดเปิดดึก</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-:root { --primary: #ff2a6d; --secondary: #ff9e00; --dark: #0f0f1a; --darker: #05050a; --card-bg: #1a1a2e; --text-muted: #a0a0b0; --success: #27ae60; --danger: #e74c3c; }
+:root { --primary: #ff2a6d; --secondary: #ff9e00; --dark: #0f0f1a; --darker: #05050a; --card-bg: #1a1a2e; --text-muted: #a0a0b0; --success: #27ae60; --danger: #e74c3c; --info: #3498db; }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: 'Segoe UI', Tahoma, sans-serif; background: linear-gradient(135deg, var(--dark) 0%, var(--darker) 100%); min-height: 100vh; color: #eee; line-height: 1.6; }
 a { text-decoration: none; color: inherit; }
@@ -20,6 +20,8 @@ a { text-decoration: none; color: inherit; }
 .nav-btn { background: none; border: none; color: #ccc; padding: 10px 20px; border-radius: 25px; cursor: pointer; font-size: 15px; transition: 0.3s; display: flex; align-items: center; gap: 8px; font-weight: 600; }
 .nav-btn:hover, .nav-btn.active { background: var(--primary); color: white; box-shadow: 0 0 15px rgba(255,42,109,0.5); }
 .user-badge { margin-left: auto; display: flex; align-items: center; gap: 10px; color: var(--secondary); font-weight: 600; }
+.verified-badge { color: var(--success); font-size: 0.8em; margin-left: 3px; }
+.unverified-badge { color: var(--danger); font-size: 0.8em; margin-left: 3px; cursor: pointer; }
 
 /* Sections */
 .section { display: none; max-width: 1200px; margin: 0 auto; padding: 40px 20px; animation: fadeIn 0.5s; }
@@ -60,10 +62,13 @@ a { text-decoration: none; color: inherit; }
 .btn-primary:hover { transform: scale(1.02); box-shadow: 0 5px 20px rgba(255,42,109,0.4); }
 .btn-danger { background: var(--danger); color: white; padding: 8px 15px; font-size: 14px; border-radius: 20px; }
 .btn-success { background: var(--success); color: white; }
+.btn-info { background: var(--info); color: white; padding: 8px 15px; font-size: 14px; border-radius: 20px; }
+.btn-warning { background: var(--secondary); color: white; padding: 8px 15px; font-size: 14px; border-radius: 20px; }
 .btn-secondary { background: #3498db; color: white; }
 .btn-sm { padding: 8px 16px; font-size: 14px; }
 .warning-box { background: rgba(255,158,0,0.15); border: 1px solid var(--secondary); color: var(--secondary); padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9em; }
 .success-box { background: rgba(39,174,96,0.15); border: 1px solid var(--success); color: var(--success); padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+.info-box { background: rgba(52,152,219,0.15); border: 1px solid var(--info); color: var(--info); padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9em; }
 
 /* Modal */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 15px; overflow-y: auto; }
@@ -71,6 +76,17 @@ a { text-decoration: none; color: inherit; }
 .modal-box { background: var(--card-bg); border-radius: 15px; max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 30px; position: relative; border: 1px solid rgba(255,255,255,0.1); }
 .modal-close { position: absolute; top: 15px; right: 15px; background: var(--primary); color: white; border: none; width: 35px; height: 35px; border-radius: 50%; font-size: 1em; cursor: pointer; z-index: 10; }
 .modal-img { width: 100%; height: 300px; object-fit: cover; border-radius: 10px; margin-bottom: 20px; }
+
+/* Image Gallery */
+.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin: 15px 0; }
+.gallery-item { position: relative; border-radius: 10px; overflow: hidden; aspect-ratio: 1; cursor: pointer; }
+.gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
+.gallery-item:hover img { transform: scale(1.1); }
+.gallery-item .remove-img { position: absolute; top: 5px; right: 5px; background: var(--danger); color: white; border: none; width: 25px; height: 25px; border-radius: 50%; cursor: pointer; font-size: 0.8em; }
+.gallery-preview { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; margin-top: 10px; }
+.gallery-preview-item { position: relative; aspect-ratio: 1; border-radius: 8px; overflow: hidden; }
+.gallery-preview-item img { width: 100%; height: 100%; object-fit: cover; }
+.gallery-preview-item .remove-btn { position: absolute; top: 3px; right: 3px; background: var(--danger); color: white; border: none; width: 22px; height: 22px; border-radius: 50%; cursor: pointer; font-size: 0.75em; }
 
 /* Reviews */
 .review-card { background: var(--dark); padding: 20px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid var(--secondary); }
@@ -106,13 +122,18 @@ a { text-decoration: none; color: inherit; }
 
 /* Admin Panel */
 .admin-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-.admin-table th, .admin-table td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.admin-table th, .admin-table td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 0.9em; }
 .admin-table th { background: var(--dark); color: var(--primary); }
 .admin-section { margin-bottom: 30px; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 10px; }
 .admin-section h3 { color: var(--secondary); margin-bottom: 15px; border-bottom: 2px solid var(--primary); padding-bottom: 10px; }
 .tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
 .tab { padding: 10px 20px; background: transparent; border: 2px solid var(--primary); color: var(--primary); border-radius: 25px; cursor: pointer; font-weight: bold; transition: 0.3s; }
 .tab.active { background: var(--primary); color: white; }
+
+/* OTP Input */
+.otp-input { display: flex; gap: 10px; justify-content: center; margin: 20px 0; }
+.otp-input input { width: 50px; height: 60px; text-align: center; font-size: 1.8em; font-weight: bold; background: var(--dark); border: 2px solid rgba(255,255,255,0.2); border-radius: 10px; color: #fff; }
+.otp-input input:focus { border-color: var(--primary); outline: none; }
 
 /* Responsive */
 @media (max-width: 768px) {
@@ -123,6 +144,8 @@ a { text-decoration: none; color: inherit; }
     .form-box { padding: 25px; }
     .modal-img { height: 200px; }
     .social-btn { padding: 8px 12px; font-size: 0.85em; }
+    .admin-table { font-size: 0.8em; }
+    .admin-table th, .admin-table td { padding: 8px 5px; }
 }
 </style>
 </head>
@@ -148,7 +171,9 @@ a { text-decoration: none; color: inherit; }
         <button class="nav-btn" id="btnAdmin" onclick="showSection('admin', event)" style="display:none;"><i class="fas fa-user-shield"></i> <span data-i18n="nav_admin">แอดมิน</span></button>
         
         <div class="user-badge" id="userBadge" style="display:none;">
-            <i class="fas fa-user-circle"></i> <span id="userNameDisplay"></span>
+            <i class="fas fa-user-circle"></i> 
+            <span id="userNameDisplay"></span>
+            <span id="verifiedBadge"></span>
             <button class="btn btn-sm btn-danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button>
         </div>
         <button class="nav-btn" id="btnLogin" onclick="openAuthModal()"><i class="fas fa-sign-in-alt"></i> <span data-i18n="nav_login">เข้าสู่ระบบ</span></button>
@@ -185,6 +210,7 @@ a { text-decoration: none; color: inherit; }
         <button class="tab active" onclick="showAdminTab('github', event)">🔧 ตั้งค่า GitHub</button>
         <button class="tab" onclick="showAdminTab('shops', event)">🏪 จัดการร้าน</button>
         <button class="tab" onclick="showAdminTab('reviews', event)">⭐ จัดการรีวิว</button>
+        <button class="tab" onclick="showAdminTab('users', event)">👥 จัดการสมาชิก</button>
     </div>
 
     <div id="adminTabGithub" class="admin-section">
@@ -213,7 +239,7 @@ a { text-decoration: none; color: inherit; }
     <div id="adminTabShops" class="admin-section" style="display:none;">
         <h3><i class="fas fa-store"></i> จัดการร้านค้าทั้งหมด</h3>
         <table class="admin-table">
-            <thead><tr><th>ID</th><th>ชื่อร้าน</th><th>เจ้าของ</th><th>ช่องทางออนไลน์</th><th>Delivery</th><th>จัดการ</th></tr></thead>
+            <thead><tr><th>ID</th><th>ชื่อร้าน</th><th>เจ้าของ</th><th>รูปภาพ</th><th>ช่องทาง</th><th>Delivery</th><th>จัดการ</th></tr></thead>
             <tbody id="adminShopsList"></tbody>
         </table>
     </div>
@@ -223,6 +249,14 @@ a { text-decoration: none; color: inherit; }
         <table class="admin-table">
             <thead><tr><th>ร้าน</th><th>ผู้ใช้</th><th>ความคิดเห็น</th><th>จัดการ</th></tr></thead>
             <tbody id="adminReviewsList"></tbody>
+        </table>
+    </div>
+
+    <div id="adminTabUsers" class="admin-section" style="display:none;">
+        <h3><i class="fas fa-users"></i> จัดการสมาชิก</h3>
+        <table class="admin-table">
+            <thead><tr><th>ID</th><th>Username</th><th>Email</th><th>สถานะ</th><th>Role</th><th>จัดการ</th></tr></thead>
+            <tbody id="adminUsersList"></tbody>
         </table>
     </div>
 </section>
@@ -235,6 +269,11 @@ a { text-decoration: none; color: inherit; }
         <div class="form-group">
             <label data-i18n="lbl_username">ชื่อผู้ใช้</label>
             <input type="text" id="authUser" placeholder="username">
+        </div>
+        <div class="form-group" id="emailGroup" style="display:none;">
+            <label data-i18n="lbl_email">อีเมล</label>
+            <input type="email" id="authEmail" placeholder="your@email.com">
+            <small style="color:var(--text-muted);">ใช้สำหรับยืนยันตัวตนและกู้คืนรหัสผ่าน</small>
         </div>
         <div class="form-group">
             <label data-i18n="lbl_password">รหัสผ่าน</label>
@@ -254,11 +293,41 @@ a { text-decoration: none; color: inherit; }
     </div>
 </div>
 
-<!-- Add Shop Modal -->
+<!-- OTP Verification Modal -->
+<div class="modal-overlay" id="otpModal">
+    <div class="modal-box" style="max-width:450px;">
+        <button class="modal-close" onclick="closeModal('otpModal')"><i class="fas fa-times"></i></button>
+        <h2 style="text-align:center; color:var(--primary); margin-bottom:10px;"><i class="fas fa-envelope-open-text"></i> ยืนยันอีเมล</h2>
+        <p style="text-align:center; color:var(--text-muted); margin-bottom:20px;">
+            รหัส OTP 6 หลักได้ถูกส่งไปยังอีเมล<br>
+            <strong id="otpEmailDisplay" style="color:var(--secondary);"></strong>
+        </p>
+        <div class="info-box" style="text-align:center;">
+            <i class="fas fa-info-circle"></i> <strong>โหมดทดสอบ:</strong> รหัส OTP ของคุณคือ 
+            <strong id="otpCodeDisplay" style="color:var(--primary); font-size:1.3em;"></strong>
+            <br><small>(ในระบบจริง OTP จะถูกส่งไปที่อีเมลของคุณ)</small>
+        </div>
+        <div class="otp-input" id="otpInput">
+            <input type="text" maxlength="1" oninput="otpNext(this, 0)">
+            <input type="text" maxlength="1" oninput="otpNext(this, 1)">
+            <input type="text" maxlength="1" oninput="otpNext(this, 2)">
+            <input type="text" maxlength="1" oninput="otpNext(this, 3)">
+            <input type="text" maxlength="1" oninput="otpNext(this, 4)">
+            <input type="text" maxlength="1" oninput="otpNext(this, 5)">
+        </div>
+        <button class="btn btn-primary" onclick="verifyOTP()"><i class="fas fa-check-circle"></i> ยืนยัน OTP</button>
+        <p style="text-align:center; margin-top:15px; color:var(--text-muted);">
+            <span id="otpResendBtn" style="cursor:pointer; color:var(--secondary);" onclick="resendOTP()">ส่งรหัสใหม่</span>
+        </p>
+    </div>
+</div>
+
+<!-- Add/Edit Shop Modal -->
 <div class="modal-overlay" id="addShopModal">
     <div class="modal-box">
         <button class="modal-close" onclick="closeModal('addShopModal')"><i class="fas fa-times"></i></button>
-        <h2 style="color:var(--primary); margin-bottom:20px;"><i class="fas fa-store"></i> <span data-i18n="add_shop_title">เพิ่มข้อมูลร้านอาหาร</span></h2>
+        <h2 style="color:var(--primary); margin-bottom:20px;"><i class="fas fa-store"></i> <span id="shopModalTitle" data-i18n="add_shop_title">เพิ่มข้อมูลร้านอาหาร</span></h2>
+        <input type="hidden" id="editShopId">
         
         <!-- ข้อมูลหลัก -->
         <div class="form-group">
@@ -278,20 +347,27 @@ a { text-decoration: none; color: inherit; }
             <input type="text" id="shopSignature" placeholder="เช่น กุ้งแม่น้ำเผา, น้ำจิ้มซีฟู้ด">
         </div>
         <div class="form-group">
-            <label data-i18n="lbl_img_url">URL รูปภาพหน้าร้าน</label>
-            <input type="text" id="shopImage" placeholder="https://...">
-        </div>
-        <div class="form-group">
             <label data-i18n="lbl_desc">รายละเอียดร้าน</label>
             <textarea id="shopDesc" placeholder="บรรยากาศเป็นยังไง เหมาะกับใคร..."></textarea>
+        </div>
+
+        <!-- รูปภาพร้าน -->
+        <h3 class="form-section-title"><i class="fas fa-images"></i> รูปภาพร้าน (หลายรูป)</h3>
+        <div class="form-group">
+            <label>เพิ่ม URL รูปภาพ</label>
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="newImageUrl" placeholder="https://example.com/image.jpg" style="flex:1;">
+                <button class="btn btn-success" onclick="addImageToGallery()" style="width:auto; padding:12px 20px;"><i class="fas fa-plus"></i></button>
+            </div>
+            <small style="color:var(--text-muted);">💡 รูปแรกจะเป็นรูปปก แสดงบนการ์ดและหน้าแรก</small>
+            <div class="gallery-preview" id="imageGalleryPreview"></div>
         </div>
 
         <!-- แผนที่ -->
         <h3 class="form-section-title"><i class="fas fa-map-marked-alt"></i> แผนที่ร้าน (Google Maps)</h3>
         <div class="form-group">
             <label>Google Maps URL หรือ Embed Link</label>
-            <input type="text" id="shopMapUrl" placeholder="https://maps.app.goo.gl/xxxxx หรือ https://www.google.com/maps/embed?pb=...">
-            <small style="color:var(--text-muted);">💡 เปิด Google Maps → กด "แชร์" → คัดลอกลิงก์ หรือคัดลอก "Embed a map" HTML</small>
+            <input type="text" id="shopMapUrl" placeholder="https://maps.app.goo.gl/xxxxx">
         </div>
 
         <!-- ช่องทางออนไลน์ -->
@@ -306,7 +382,7 @@ a { text-decoration: none; color: inherit; }
         </div>
         <div class="form-group">
             <label><i class="fab fa-line" style="color:#06c755;"></i> Line Official / Line ID</label>
-            <input type="text" id="shopLine" placeholder="@yourshop หรือ https://line.me/ti/p/~xxxx">
+            <input type="text" id="shopLine" placeholder="@yourshop">
         </div>
         <div class="form-group">
             <label><i class="fab fa-youtube" style="color:#ff0000;"></i> YouTube Channel</label>
@@ -340,6 +416,14 @@ a { text-decoration: none; color: inherit; }
     </div>
 </div>
 
+<!-- Image Viewer Modal -->
+<div class="modal-overlay" id="imageViewerModal" onclick="if(event.target===this)closeModal('imageViewerModal')">
+    <div style="max-width:90vw; max-height:90vh; position:relative;">
+        <button class="modal-close" onclick="closeModal('imageViewerModal')" style="top:-50px; right:0;"><i class="fas fa-times"></i></button>
+        <img id="viewerImage" src="" style="max-width:100%; max-height:85vh; border-radius:10px;">
+    </div>
+</div>
+
 <script>
 // ==================== TRANSLATIONS ====================
 const i18n = {
@@ -347,33 +431,33 @@ const i18n = {
         nav_home: 'หน้าหลัก', nav_restaurants: 'รวมร้านเด็ด', nav_add: 'ลงร้านของคุณ', nav_login: 'เข้าสู่ระบบ', nav_admin: 'แอดมิน',
         hero_title: 'ค้นหาร้านเด็ดพัทยา...ยามดึก', hero_sub: 'รวมรีวิวร้านอาหารกลางคืน มูกระทะ ซีฟู้ด ร้านเปิดดึก จากคนพื้นที่ตัวจริง',
         featured: 'ร้านแนะนำสัปดาห์นี้', dir_title: 'สารบัญร้านอาหารยามดึก',
-        login_title: 'เข้าสู่ระบบ / สมัครสมาชิก', lbl_username: 'ชื่อผู้ใช้', lbl_password: 'รหัสผ่าน', lbl_role: 'ประเภทสมาชิก',
+        login_title: 'เข้าสู่ระบบ / สมัครสมาชิก', lbl_username: 'ชื่อผู้ใช้', lbl_email: 'อีเมล', lbl_password: 'รหัสผ่าน', lbl_role: 'ประเภทสมาชิก',
         role_customer: 'ลูกค้า (รีวิวร้าน)', role_owner: 'เจ้าของร้าน (ลงร้านเอง)', btn_login: 'เข้าสู่ระบบ', toggle_register: 'ยังไม่มีบัญชี? คลิกเพื่อสมัครสมาชิก',
         toggle_login: 'มีบัญชีแล้ว? คลิกเพื่อเข้าสู่ระบบ', btn_register: 'สมัครสมาชิก',
-        add_shop_title: 'เพิ่มข้อมูลร้านอาหาร', lbl_shop_name: 'ชื่อร้าน', lbl_location: 'สถานที่ / พื้นที่', lbl_hours: 'เวลาเปิด-ปิด',
-        lbl_signature: 'เมนูเด็ด / จุดเด่น', lbl_img_url: 'URL รูปภาพหน้าร้าน', lbl_desc: 'รายละเอียดร้าน', btn_save: 'บันทึกร้านค้า',
+        add_shop_title: 'เพิ่มข้อมูลร้านอาหาร', edit_shop_title: 'แก้ไขข้อมูลร้านอาหาร', lbl_shop_name: 'ชื่อร้าน', lbl_location: 'สถานที่ / พื้นที่', lbl_hours: 'เวลาเปิด-ปิด',
+        lbl_signature: 'เมนูเด็ด / จุดเด่น', lbl_desc: 'รายละเอียดร้าน', btn_save: 'บันทึกร้านค้า',
         admin_panel: 'แผงควบคุมแอดมิน',
         detail_hours: 'เวลาเปิด', detail_loc: 'พิกัด', detail_sig: 'เมนูเด็ด', write_review: 'เขียนรีวิว', btn_submit_review: 'ส่งรีวิว',
         reviews_title: 'รีวิวจากสมาชิก', no_review: 'ยังไม่มีการรีวิว เป็นคนแรกเลย!', alert_login: 'กรุณาเข้าสู่ระบบก่อน', alert_fill: 'กรุณากรอกข้อมูลให้ครบ',
         alert_success: 'บันทึกสำเร็จ!', confirm_delete: 'ต้องการลบรายการนี้หรือไม่?',
-        section_social: 'ช่องทางออนไลน์', section_map: 'แผนที่ร้าน', section_delivery: 'สั่งอาหาร Delivery',
-        btn_open_map: 'เปิดใน Google Maps'
+        section_social: 'ช่องทางออนไลน์', section_map: 'แผนที่ร้าน', section_delivery: 'สั่งอาหาร Delivery', section_gallery: 'รูปภาพร้าน',
+        btn_open_map: 'เปิดใน Google Maps', btn_edit: 'แก้ไขร้าน'
     },
     en: {
         nav_home: 'Home', nav_restaurants: 'Restaurants', nav_add: 'Add Your Shop', nav_login: 'Login', nav_admin: 'Admin',
         hero_title: 'Discover Pattaya Late-Night Eats', hero_sub: 'Real reviews for midnight cravings: Moo Kata, Seafood, and 24/7 spots.',
         featured: 'Featured This Week', dir_title: 'Late-Night Directory',
-        login_title: 'Login / Register', lbl_username: 'Username', lbl_password: 'Password', lbl_role: 'Account Type',
+        login_title: 'Login / Register', lbl_username: 'Username', lbl_email: 'Email', lbl_password: 'Password', lbl_role: 'Account Type',
         role_customer: 'Customer (Review shops)', role_owner: 'Restaurant Owner (Add shops)', btn_login: 'Login', toggle_register: "Don't have an account? Click to register",
         toggle_login: 'Already have an account? Click to login', btn_register: 'Register',
-        add_shop_title: 'Add Restaurant Info', lbl_shop_name: 'Shop Name', lbl_location: 'Location / Area', lbl_hours: 'Opening Hours',
-        lbl_signature: 'Signature Dish', lbl_img_url: 'Image URL', lbl_desc: 'Description', btn_save: 'Save Shop',
+        add_shop_title: 'Add Restaurant Info', edit_shop_title: 'Edit Restaurant Info', lbl_shop_name: 'Shop Name', lbl_location: 'Location / Area', lbl_hours: 'Opening Hours',
+        lbl_signature: 'Signature Dish', lbl_desc: 'Description', btn_save: 'Save Shop',
         admin_panel: 'Admin Dashboard',
         detail_hours: 'Hours', detail_loc: 'Location', detail_sig: 'Signature', write_review: 'Write a Review', btn_submit_review: 'Submit Review',
         reviews_title: 'Member Reviews', no_review: 'No reviews yet. Be the first!', alert_login: 'Please login first', alert_fill: 'Please fill all fields',
         alert_success: 'Saved successfully!', confirm_delete: 'Are you sure you want to delete this?',
-        section_social: 'Online Channels', section_map: 'Location Map', section_delivery: 'Order Delivery',
-        btn_open_map: 'Open in Google Maps'
+        section_social: 'Online Channels', section_map: 'Location Map', section_delivery: 'Order Delivery', section_gallery: 'Photo Gallery',
+        btn_open_map: 'Open in Google Maps', btn_edit: 'Edit Shop'
     }
 };
 let currentLang = localStorage.getItem('yamdookLang') || 'th';
@@ -391,25 +475,36 @@ function changeLang(lang) {
 
 // ==================== DATABASE (LocalStorage) ====================
 let db = { users: [], restaurants: [], nextUserId: 1, nextRestId: 1 };
+let tempImages = []; // สำหรับเก็บ URL รูปขณะเพิ่ม/แก้ไขร้าน
+let currentOTP = null;
+let pendingUser = null;
 
 function initDB() {
     const saved = localStorage.getItem('yamdookPattayaDB');
     if (saved) {
         db = JSON.parse(saved);
-        // อัปเกรดข้อมูลเก่าให้รองรับ field ใหม่
+        // อัปเกรดข้อมูลเก่า
+        db.users.forEach(u => {
+            if (!u.email) u.email = '';
+            if (u.verified === undefined) u.verified = u.role === 'admin';
+        });
         db.restaurants.forEach(r => {
             if (!r.social) r.social = {};
             if (!r.delivery) r.delivery = {};
             if (!r.mapUrl) r.mapUrl = '';
+            if (!r.images) r.images = r.image ? [r.image] : [];
         });
+        saveDB();
     } else {
-        db.users.push({ id: db.nextUserId++, username: 'admin', password: 'admin123', role: 'admin' });
+        // Default Admin
+        db.users.push({ id: db.nextUserId++, username: 'admin', password: 'admin123', role: 'admin', email: 'admin@yamdook.com', verified: true });
         
         const sampleShops = [
             { 
                 name: 'มูกระทะตีแตก', location: 'พัทยาใต้', hours: '20:00 - 04:00', 
                 signature: 'กุ้งแม่น้ำเผา, น้ำจิ้มซีฟู้ดมะนาวดอง', 
-                image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800', 
+                image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800',
+                images: ['https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800', 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800'],
                 description: 'มูกระทะเปิดดึกสุดฮิต น้ำจิ้มซีฟู้ดรสเด็ด เนื้อสัตว์สดใหม่ บรรยากาศดีริมถนนพัทยาใต้',
                 social: { facebook: 'https://facebook.com/mootatatpataya', tiktok: 'https://tiktok.com/@mootatat', line: '@mootatat', youtube: '' },
                 mapUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d387571.0386528988!2d100.8166!3d12.9236!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTLCsDU1JzI1LjAiTiAxMDDCsDQ4JzU5LjgiRQ!5e0!3m2!1sth!2sth!4v1234567890',
@@ -418,7 +513,8 @@ function initDB() {
             { 
                 name: 'ซีฟู้ดจอมเทียนยามวิกาล', location: 'หาดจอมเทียน', hours: '18:00 - 02:00', 
                 signature: 'กุ้งแม่น้ำเผา, ปูผัดผงกะหรี่', 
-                image: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800', 
+                image: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800',
+                images: ['https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800', 'https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?w=800'],
                 description: 'ซีฟู้ดริมหาดจอมเทียน กุ้งแม่น้ำเผา ปลาหมึกย่าง สดจากตลาดทุกวัน รับลมทะเล',
                 social: { facebook: 'https://facebook.com/jomtienfood', tiktok: '', line: '@jomtienfood', youtube: 'https://youtube.com/@jomtienfood' },
                 mapUrl: '',
@@ -427,7 +523,8 @@ function initDB() {
             { 
                 name: 'ส้มตำยกครก ตี 2', location: 'ซอยบัวขาว', hours: '18:00 - 03:00', 
                 signature: 'ส้มตำปูปลาร้า, ลาบเลือด', 
-                image: 'https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=800', 
+                image: 'https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=800',
+                images: ['https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=800'],
                 description: 'ตำซิ่งรสจัดจ้าน เส้นมะละกอสับสดใหม่ แก้เลี่ยนหลังออกจากผับ',
                 social: { facebook: '', tiktok: 'https://tiktok.com/@somyum', line: '', youtube: '' },
                 mapUrl: '',
@@ -436,7 +533,8 @@ function initDB() {
             { 
                 name: 'Night Owl Bites', location: 'นอร์ธพัทยา', hours: '24 Hours', 
                 signature: 'Smash Burger, Loaded Fries', 
-                image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800', 
+                image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800',
+                images: ['https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800', 'https://images.unsplash.com/photo-1525351484163-7529414344d8?w=800'],
                 description: 'เบอร์เกอร์และของว่างสไตล์อเมริกัน เปิด 24 ชม. เอาใจนักท่องเที่ยวและคนนอนดึก',
                 social: { facebook: 'https://facebook.com/nightowlbites', tiktok: 'https://tiktok.com/@nightowl', line: '@nightowl', youtube: '' },
                 mapUrl: '',
@@ -472,6 +570,7 @@ function openAuthModal() {
 function updateAuthUI() {
     const t = i18n[currentLang];
     document.getElementById('roleGroup').style.display = isRegisterMode ? 'block' : 'none';
+    document.getElementById('emailGroup').style.display = isRegisterMode ? 'block' : 'none';
     document.getElementById('authSubmitBtn').textContent = isRegisterMode ? t.btn_register : t.btn_login;
     document.getElementById('authToggleText').textContent = isRegisterMode ? t.toggle_login : t.toggle_register;
 }
@@ -486,20 +585,75 @@ function handleAuth() {
     if (!username || !password) return alert(i18n[currentLang].alert_fill);
 
     if (isRegisterMode) {
+        const email = document.getElementById('authEmail').value.trim();
         const role = document.getElementById('authRole').value;
+        if (!email) return alert('กรุณากรอกอีเมล');
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return alert('รูปแบบอีเมลไม่ถูกต้อง');
         if (db.users.find(u => u.username === username)) return alert('Username already exists!');
-        const newUser = { id: db.nextUserId++, username, password, role };
-        db.users.push(newUser);
-        saveDB();
-        sessionStorage.setItem('currentUserId', newUser.id);
+        if (db.users.find(u => u.email === email)) return alert('อีเมลนี้ถูกใช้แล้ว');
+        
+        // สร้าง user ชั่วคราว รอ OTP
+        pendingUser = { username, password, email, role };
+        sendOTP(email);
     } else {
         const user = db.users.find(u => u.username === username && u.password === password);
         if (!user) return alert('Invalid credentials!');
         sessionStorage.setItem('currentUserId', user.id);
+        closeModal('authModal');
+        updateNavbar();
+        renderAll();
     }
-    closeModal('authModal');
-    updateNavbar();
-    renderAll();
+}
+
+function sendOTP(email) {
+    currentOTP = Math.floor(100000 + Math.random() * 900000).toString();
+    document.getElementById('otpEmailDisplay').textContent = email;
+    document.getElementById('otpCodeDisplay').textContent = currentOTP;
+    // เคลียร์ช่อง OTP
+    document.querySelectorAll('#otpInput input').forEach(i => i.value = '');
+    document.getElementById('authModal').classList.remove('show');
+    document.getElementById('otpModal').classList.add('show');
+    // โฟกัสช่องแรก
+    setTimeout(() => document.querySelector('#otpInput input').focus(), 100);
+}
+
+function otpNext(input, idx) {
+    input.value = input.value.replace(/[^0-9]/g, '');
+    const inputs = document.querySelectorAll('#otpInput input');
+    if (input.value && idx < 5) inputs[idx + 1].focus();
+}
+
+function verifyOTP() {
+    const inputs = document.querySelectorAll('#otpInput input');
+    const entered = Array.from(inputs).map(i => i.value).join('');
+    if (entered === currentOTP) {
+        // สร้าง user จริง
+        const newUser = { 
+            id: db.nextUserId++, 
+            username: pendingUser.username, 
+            password: pendingUser.password, 
+            email: pendingUser.email, 
+            role: pendingUser.role,
+            verified: true
+        };
+        db.users.push(newUser);
+        saveDB();
+        sessionStorage.setItem('currentUserId', newUser.id);
+        closeModal('otpModal');
+        pendingUser = null;
+        currentOTP = null;
+        updateNavbar();
+        renderAll();
+        alert('✅ ยืนยันอีเมลสำเร็จ! ยินดีต้อนรับสู่ Yamdook-Pattaya');
+    } else {
+        alert('❌ รหัส OTP ไม่ถูกต้อง กรุณาลองใหม่');
+    }
+}
+
+function resendOTP() {
+    if (pendingUser) {
+        sendOTP(pendingUser.email);
+    }
 }
 
 function logout() {
@@ -514,14 +668,110 @@ function updateNavbar() {
     document.getElementById('userBadge').style.display = user ? 'flex' : 'none';
     document.getElementById('btnAddShop').style.display = (user && (user.role === 'owner' || user.role === 'admin')) ? 'flex' : 'none';
     document.getElementById('btnAdmin').style.display = (user && user.role === 'admin') ? 'flex' : 'none';
-    if (user) document.getElementById('userNameDisplay').textContent = user.username;
+    if (user) {
+        document.getElementById('userNameDisplay').textContent = user.username;
+        const badge = document.getElementById('verifiedBadge');
+        if (user.verified) {
+            badge.innerHTML = '<i class="fas fa-check-circle verified-badge" title="ยืนยันอีเมลแล้ว"></i>';
+        } else {
+            badge.innerHTML = '<i class="fas fa-exclamation-circle unverified-badge" title="ยังไม่ได้ยืนยันอีเมล - คลิกเพื่อยืนยัน" onclick="requestVerification()"></i>';
+        }
+    }
+}
+
+function requestVerification() {
+    const user = getCurrentUser();
+    if (!user || user.verified) return;
+    pendingUser = { ...user, isResend: true };
+    sendOTP(user.email);
+    // เมื่อ OTP ถูกยืนยัน จะอัปเดต verified ของ user ที่มีอยู่
 }
 
 // ==================== SHOPS ====================
 function openAddShopModal() {
     const user = getCurrentUser();
     if (!user) return alert(i18n[currentLang].alert_login);
+    if (!user.verified) return alert('กรุณายืนยันอีเมลก่อนจึงจะสามารถเพิ่มร้านได้');
+    
+    document.getElementById('editShopId').value = '';
+    document.getElementById('shopModalTitle').textContent = i18n[currentLang].add_shop_title;
+    clearShopForm();
+    tempImages = [];
+    renderImageGalleryPreview();
     document.getElementById('addShopModal').classList.add('show');
+}
+
+function openEditShopModal(shopId) {
+    const user = getCurrentUser();
+    if (!user) return;
+    const shop = db.restaurants.find(r => r.id === shopId);
+    if (!shop) return;
+    
+    // ตรวจสอบสิทธิ์: admin แก้ได้ทุกร้าน, owner แก้ได้เฉพาะร้านตัวเอง
+    if (user.role !== 'admin' && shop.ownerId !== user.id) {
+        return alert('คุณไม่มีสิทธิ์แก้ไขร้านนี้');
+    }
+    
+    document.getElementById('editShopId').value = shopId;
+    document.getElementById('shopModalTitle').textContent = i18n[currentLang].edit_shop_title;
+    
+    // เติมข้อมูล
+    document.getElementById('shopName').value = shop.name || '';
+    document.getElementById('shopLocation').value = shop.location || '';
+    document.getElementById('shopHours').value = shop.hours || '';
+    document.getElementById('shopSignature').value = shop.signature || '';
+    document.getElementById('shopDesc').value = shop.description || '';
+    document.getElementById('shopMapUrl').value = shop.mapUrl || '';
+    document.getElementById('shopFacebook').value = shop.social?.facebook || '';
+    document.getElementById('shopTiktok').value = shop.social?.tiktok || '';
+    document.getElementById('shopLine').value = shop.social?.line || '';
+    document.getElementById('shopYoutube').value = shop.social?.youtube || '';
+    document.getElementById('shopLineman').value = shop.delivery?.lineman || '';
+    document.getElementById('shopGrab').value = shop.delivery?.grab || '';
+    document.getElementById('shopShopee').value = shop.delivery?.shopee || '';
+    
+    tempImages = [...(shop.images || [])];
+    renderImageGalleryPreview();
+    document.getElementById('addShopModal').classList.add('show');
+}
+
+function clearShopForm() {
+    ['shopName','shopLocation','shopHours','shopSignature','shopDesc','shopMapUrl','shopFacebook','shopTiktok','shopLine','shopYoutube','shopLineman','shopGrab','shopShopee','newImageUrl'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+}
+
+function addImageToGallery() {
+    const input = document.getElementById('newImageUrl');
+    const url = input.value.trim();
+    if (!url) return;
+    if (!/^https?:\/\/.+/i.test(url)) {
+        return alert('กรุณาใส่ URL ที่ขึ้นต้นด้วย http:// หรือ https://');
+    }
+    tempImages.push(url);
+    input.value = '';
+    renderImageGalleryPreview();
+}
+
+function removeImageFromGallery(idx) {
+    tempImages.splice(idx, 1);
+    renderImageGalleryPreview();
+}
+
+function renderImageGalleryPreview() {
+    const container = document.getElementById('imageGalleryPreview');
+    if (tempImages.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-muted); grid-column:1/-1; text-align:center; padding:20px;">ยังไม่มีรูปภาพ - เพิ่ม URL ด้านบน</p>';
+        return;
+    }
+    container.innerHTML = tempImages.map((url, idx) => `
+        <div class="gallery-preview-item">
+            <img src="${url}" onerror="this.src='https://via.placeholder.com/100?text=Error'">
+            ${idx === 0 ? '<span style="position:absolute;bottom:3px;left:3px;background:var(--primary);color:white;padding:2px 6px;border-radius:8px;font-size:0.7em;">ปก</span>' : ''}
+            <button class="remove-btn" onclick="removeImageFromGallery(${idx})"><i class="fas fa-times"></i></button>
+        </div>
+    `).join('');
 }
 
 function saveShop() {
@@ -530,8 +780,9 @@ function saveShop() {
     const name = document.getElementById('shopName').value.trim();
     const location = document.getElementById('shopLocation').value.trim();
     const hours = document.getElementById('shopHours').value.trim();
+    if (!name || !location || !hours) return alert(i18n[currentLang].alert_fill);
+    
     const signature = document.getElementById('shopSignature').value.trim();
-    const image = document.getElementById('shopImage').value.trim() || 'https://via.placeholder.com/800x400?text=No+Image';
     const description = document.getElementById('shopDesc').value.trim();
     const mapUrl = document.getElementById('shopMapUrl').value.trim();
     
@@ -547,19 +798,40 @@ function saveShop() {
         grab: document.getElementById('shopGrab').value.trim(),
         shopee: document.getElementById('shopShopee').value.trim()
     };
-
-    if (!name || !location || !hours) return alert(i18n[currentLang].alert_fill);
-
-    db.restaurants.push({
-        id: db.nextRestId++, ownerId: user.id, name, location, hours, signature, image, description,
-        social, mapUrl, delivery, reviews: []
-    });
+    
+    const images = [...tempImages];
+    const image = images[0] || 'https://via.placeholder.com/800x400?text=No+Image';
+    
+    const editId = document.getElementById('editShopId').value;
+    
+    if (editId) {
+        // แก้ไขร้านเดิม
+        const shop = db.restaurants.find(r => r.id === parseInt(editId));
+        if (shop) {
+            shop.name = name;
+            shop.location = location;
+            shop.hours = hours;
+            shop.signature = signature;
+            shop.description = description;
+            shop.image = image;
+            shop.images = images;
+            shop.mapUrl = mapUrl;
+            shop.social = social;
+            shop.delivery = delivery;
+        }
+    } else {
+        // เพิ่มร้านใหม่
+        db.restaurants.push({
+            id: db.nextRestId++, ownerId: user.id, name, location, hours, signature, image, images, description,
+            social, mapUrl, delivery, reviews: []
+        });
+    }
+    
     saveDB();
     closeModal('addShopModal');
     alert(i18n[currentLang].alert_success);
-    
-    // Clear form
-    ['shopName','shopLocation','shopHours','shopSignature','shopImage','shopDesc','shopMapUrl','shopFacebook','shopTiktok','shopLine','shopYoutube','shopLineman','shopGrab','shopShopee'].forEach(id => document.getElementById(id).value = '');
+    clearShopForm();
+    tempImages = [];
     renderAll();
 }
 
@@ -581,19 +853,15 @@ function renderStars(rating) {
     return stars;
 }
 
-// แปลง URL แผนที่ให้เป็น embed URL
 function getMapEmbedUrl(url) {
     if (!url) return '';
-    // ถ้าเป็น embed URL แล้ว
     if (url.includes('google.com/maps/embed')) return url;
-    // ถ้าเป็น short link (maps.app.goo.gl, maps.google.com) ให้แปลงเป็น embed
     if (url.includes('maps.app.goo.gl') || url.includes('maps.google.com') || url.includes('google.com/maps')) {
         return `https://maps.google.com/maps?q=${encodeURIComponent(url)}&output=embed`;
     }
     return url;
 }
 
-// แปลง Line ID เป็น URL ถ้าเป็น @username
 function normalizeLineUrl(line) {
     if (!line) return '';
     if (line.startsWith('http')) return line;
@@ -601,7 +869,6 @@ function normalizeLineUrl(line) {
     return `https://line.me/ti/p/~${line}`;
 }
 
-// สร้าง social links HTML
 function renderSocialLinks(social) {
     if (!social) return '';
     let html = '';
@@ -612,7 +879,6 @@ function renderSocialLinks(social) {
     return html ? `<div class="social-links">${html}</div>` : '';
 }
 
-// สร้าง delivery links HTML
 function renderDeliveryLinks(delivery) {
     if (!delivery) return '';
     let html = '';
@@ -622,7 +888,6 @@ function renderDeliveryLinks(delivery) {
     return html ? `<div class="delivery-links">${html}</div>` : '';
 }
 
-// สร้าง delivery mini badges สำหรับการ์ด
 function renderDeliveryBadges(delivery) {
     if (!delivery) return '';
     let badges = '';
@@ -690,7 +955,24 @@ function openDetail(id) {
         }).join('');
     }
 
-    // สร้างส่วนแผนที่
+    // Gallery
+    const images = r.images && r.images.length > 0 ? r.images : (r.image ? [r.image] : []);
+    let galleryHtml = '';
+    if (images.length > 0) {
+        galleryHtml = `
+            <hr style="border-color:rgba(255,255,255,0.1); margin:20px 0;">
+            <h3 style="color:var(--secondary); margin-bottom:15px;"><i class="fas fa-images"></i> ${t.section_gallery}</h3>
+            <div class="gallery">
+                ${images.map(url => `
+                    <div class="gallery-item" onclick="viewImage('${url}')">
+                        <img src="${url}" onerror="this.src='https://via.placeholder.com/150?text=Error'">
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+
+    // Map
     let mapHtml = '';
     if (r.mapUrl) {
         const embedUrl = getMapEmbedUrl(r.mapUrl);
@@ -706,7 +988,12 @@ function openDetail(id) {
         `;
     }
 
-    // สร้างส่วนช่องทางออนไลน์
+    // Edit button for owner/admin
+    let editBtn = '';
+    if (user && (user.role === 'admin' || (user.role === 'owner' && r.ownerId === user.id))) {
+        editBtn = `<button class="btn btn-warning" onclick="closeModal('detailModal'); openEditShopModal(${r.id})" style="margin-top:10px;"><i class="fas fa-edit"></i> ${t.btn_edit}</button>`;
+    }
+
     const socialHtml = renderSocialLinks(r.social);
     const socialSection = socialHtml ? `
         <hr style="border-color:rgba(255,255,255,0.1); margin:20px 0;">
@@ -714,7 +1001,6 @@ function openDetail(id) {
         ${socialHtml}
     ` : '';
 
-    // สร้างส่วน Delivery
     const deliveryHtml = renderDeliveryLinks(r.delivery);
     const deliverySection = deliveryHtml ? `
         <hr style="border-color:rgba(255,255,255,0.1); margin:20px 0;">
@@ -735,9 +1021,11 @@ function openDetail(id) {
             <div style="background:var(--dark); padding:15px; border-radius:10px;"><strong style="color:var(--secondary);"><i class="fas fa-utensils"></i> ${t.detail_sig}:</strong><br>${r.signature || '-'}</div>
         </div>
 
+        ${galleryHtml}
         ${socialSection}
         ${deliverySection}
         ${mapHtml}
+        ${editBtn}
 
         <hr style="border-color:rgba(255,255,255,0.1); margin:20px 0;">
         <h3 style="color:var(--secondary); margin-bottom:15px;"><i class="fas fa-comments"></i> ${t.reviews_title}</h3>
@@ -758,6 +1046,11 @@ function openDetail(id) {
     document.getElementById('detailModal').classList.add('show');
 }
 
+function viewImage(url) {
+    document.getElementById('viewerImage').src = url;
+    document.getElementById('imageViewerModal').classList.add('show');
+}
+
 function setRating(val) { selectedRating = val; updateStarUI(val); }
 function hoverRating(val) { updateStarUI(val); }
 function resetRatingHover() { updateStarUI(selectedRating); }
@@ -771,6 +1064,7 @@ function updateStarUI(val) {
 function submitReview() {
     const user = getCurrentUser();
     if (!user) return;
+    if (!user.verified) return alert('กรุณายืนยันอีเมลก่อนจึงจะสามารถรีวิวได้');
     const text = document.getElementById('reviewText').value.trim();
     if (selectedRating === 0 || !text) return alert(i18n[currentLang].alert_fill);
     
@@ -791,6 +1085,7 @@ function showAdminTab(tab, event) {
     event.target.classList.add('active');
     if (tab === 'shops') renderAdminShops();
     if (tab === 'reviews') renderAdminReviews();
+    if (tab === 'users') renderAdminUsers();
 }
 
 function renderAdminShops() {
@@ -799,13 +1094,18 @@ function renderAdminShops() {
         const owner = db.users.find(u => u.id === r.ownerId);
         const socialCount = r.social ? Object.values(r.social).filter(v => v).length : 0;
         const deliveryCount = r.delivery ? Object.values(r.delivery).filter(v => v).length : 0;
+        const imgCount = (r.images || []).length;
         return `<tr>
             <td>${r.id}</td>
             <td>${r.name}</td>
             <td>${owner ? owner.username : 'System'}</td>
-            <td>${socialCount > 0 ? `<span style="color:var(--success);">${socialCount} ช่องทาง</span>` : '<span style="color:var(--text-muted);">-</span>'}</td>
-            <td>${deliveryCount > 0 ? `<span style="color:var(--success);">${deliveryCount} แอป</span>` : '<span style="color:var(--text-muted);">-</span>'}</td>
-            <td><button class="btn btn-danger" onclick="deleteShop(${r.id})"><i class="fas fa-trash"></i></button></td>
+            <td>${imgCount} รูป</td>
+            <td>${socialCount > 0 ? `<span style="color:var(--success);">${socialCount}</span>` : '-'}</td>
+            <td>${deliveryCount > 0 ? `<span style="color:var(--success);">${deliveryCount}</span>` : '-'}</td>
+            <td>
+                <button class="btn btn-info" onclick="openEditShopModal(${r.id})"><i class="fas fa-edit"></i></button>
+                <button class="btn btn-danger" onclick="deleteShop(${r.id})"><i class="fas fa-trash"></i></button>
+            </td>
         </tr>`;
     }).join('');
 }
@@ -827,6 +1127,43 @@ function renderAdminReviews() {
             <td><button class="btn btn-danger" onclick="deleteReview(${rev.restId}, ${rev.reviewIdx})"><i class="fas fa-trash"></i></button></td>
         </tr>
     `).join('');
+}
+
+function renderAdminUsers() {
+    const usersList = document.getElementById('adminUsersList');
+    usersList.innerHTML = db.users.map(u => `
+        <tr>
+            <td>${u.id}</td>
+            <td>${u.username}</td>
+            <td>${u.email || '-'} ${u.verified ? '<i class="fas fa-check-circle" style="color:var(--success);"></i>' : '<i class="fas fa-exclamation-circle" style="color:var(--danger);"></i>'}</td>
+            <td>${u.verified ? '<span style="color:var(--success);">ยืนยันแล้ว</span>' : '<span style="color:var(--danger);">ยังไม่ยืนยัน</span>'}</td>
+            <td><span style="background:${u.role === 'admin' ? 'var(--primary)' : u.role === 'owner' ? 'var(--secondary)' : 'var(--info)'}; color:white; padding:3px 10px; border-radius:12px; font-size:0.85em;">${u.role}</span></td>
+            <td>
+                ${u.role !== 'admin' ? `
+                    <button class="btn btn-info" onclick="toggleVerifyUser(${u.id})" title="${u.verified ? 'ยกเลิกการยืนยัน' : 'ยืนยันอีเมล'}">
+                        <i class="fas ${u.verified ? 'fa-times-circle' : 'fa-check-circle'}"></i>
+                    </button>
+                    <button class="btn btn-danger" onclick="deleteUser(${u.id})"><i class="fas fa-trash"></i></button>
+                ` : '<span style="color:var(--text-muted);">-</span>'}
+            </td>
+        </tr>
+    `).join('');
+}
+
+function toggleVerifyUser(userId) {
+    const user = db.users.find(u => u.id === userId);
+    if (user) {
+        user.verified = !user.verified;
+        saveDB();
+        renderAdminUsers();
+    }
+}
+
+function deleteUser(userId) {
+    if (!confirm(i18n[currentLang].confirm_delete)) return;
+    db.users = db.users.filter(u => u.id !== userId);
+    saveDB();
+    renderAdminUsers();
 }
 
 function deleteShop(id) {
@@ -901,6 +1238,7 @@ function showSection(id, event) {
         loadGithubConfig();
         renderAdminShops();
         renderAdminReviews();
+        renderAdminUsers();
     }
 }
 
