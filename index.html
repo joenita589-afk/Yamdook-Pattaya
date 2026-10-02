@@ -42,16 +42,19 @@ a { text-decoration: none; color: inherit; }
 .card-hours { color: var(--secondary); font-weight: 600; display: flex; align-items: center; gap: 5px; }
 .card-desc { color: #bbb; font-size: 0.95em; margin-bottom: 15px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .rating-stars { color: var(--secondary); }
-.tag { display: inline-block; background: rgba(255,42,109,0.2); color: var(--primary); padding: 4px 12px; border-radius: 20px; font-size: 0.8em; font-weight: 600; margin-top: 10px; }
+.tag { display: inline-block; background: rgba(255,42,109,0.2); color: var(--primary); padding: 4px 12px; border-radius: 20px; font-size: 0.8em; font-weight: 600; margin-top: 10px; margin-right: 5px; }
+.card-delivery-badges { display: flex; gap: 5px; margin-top: 10px; flex-wrap: wrap; }
+.delivery-mini-badge { background: rgba(255,255,255,0.08); padding: 3px 8px; border-radius: 12px; font-size: 0.75em; color: #fff; display: inline-flex; align-items: center; gap: 4px; }
 
 /* Forms & Inputs */
-.form-box { max-width: 600px; margin: 0 auto; background: var(--card-bg); padding: 40px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); }
+.form-box { max-width: 700px; margin: 0 auto; background: var(--card-bg); padding: 40px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); }
 .form-box h2 { text-align: center; margin-bottom: 25px; color: var(--primary); }
 .form-group { margin-bottom: 20px; }
 .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #ddd; }
 .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px 15px; background: var(--dark); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-size: 15px; transition: 0.3s; }
 .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 10px rgba(255,42,109,0.3); }
 .form-group textarea { min-height: 100px; resize: vertical; }
+.form-section-title { color: var(--secondary); font-size: 1.1em; margin: 25px 0 15px; padding-bottom: 8px; border-bottom: 1px dashed rgba(255,158,0,0.3); display: flex; align-items: center; gap: 8px; }
 .btn { padding: 12px 25px; border: none; border-radius: 25px; cursor: pointer; font-size: 16px; font-weight: 600; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; justify-content: center; }
 .btn-primary { background: linear-gradient(90deg, var(--primary), var(--secondary)); color: white; width: 100%; }
 .btn-primary:hover { transform: scale(1.02); box-shadow: 0 5px 20px rgba(255,42,109,0.4); }
@@ -81,6 +84,26 @@ a { text-decoration: none; color: inherit; }
 .star-rating i { color: #444; transition: 0.2s; }
 .star-rating i.active, .star-rating i:hover { color: var(--secondary); }
 
+/* Social & Delivery Buttons */
+.social-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+.social-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 25px; color: white; font-weight: 600; font-size: 0.95em; transition: 0.3s; text-decoration: none; }
+.social-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+.social-btn.facebook { background: #1877f2; }
+.social-btn.tiktok { background: linear-gradient(135deg, #000 0%, #25f4ee 50%, #fe2c55 100%); }
+.social-btn.line { background: #06c755; }
+.social-btn.youtube { background: #ff0000; }
+.social-btn.maps { background: #4285f4; }
+
+.delivery-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-top: 10px; }
+.delivery-btn { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; border-radius: 12px; color: white; font-weight: 700; font-size: 0.95em; transition: 0.3s; text-decoration: none; }
+.delivery-btn:hover { transform: scale(1.03); }
+.delivery-btn.lineman { background: linear-gradient(135deg, #0bb1e6, #0a8fb8); }
+.delivery-btn.grab { background: linear-gradient(135deg, #00b14f, #008a3d); }
+.delivery-btn.shopee { background: linear-gradient(135deg, #ee4d2d, #c7381d); }
+
+.map-container { margin-top: 15px; border-radius: 12px; overflow: hidden; border: 2px solid rgba(255,255,255,0.1); }
+.map-container iframe { width: 100%; height: 250px; border: 0; display: block; }
+
 /* Admin Panel */
 .admin-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
 .admin-table th, .admin-table td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); }
@@ -99,6 +122,7 @@ a { text-decoration: none; color: inherit; }
     .grid { grid-template-columns: 1fr; }
     .form-box { padding: 25px; }
     .modal-img { height: 200px; }
+    .social-btn { padding: 8px 12px; font-size: 0.85em; }
 }
 </style>
 </head>
@@ -106,7 +130,7 @@ a { text-decoration: none; color: inherit; }
 
 <!-- Top Bar -->
 <div class="top-bar">
-    <div class="logo-text" onclick="showSection('home')"><i class="fas fa-moon"></i> Yamdook-Pattaya</div>
+    <div class="logo-text" onclick="showSection('home', event)"><i class="fas fa-moon"></i> Yamdook-Pattaya</div>
     <div class="lang-select">
         <select id="langSelect" onchange="changeLang(this.value)">
             <option value="th">🇹🇭 TH</option>
@@ -154,7 +178,7 @@ a { text-decoration: none; color: inherit; }
     <h1 style="color:var(--primary); text-align:center; margin-bottom:30px;"><i class="fas fa-user-shield"></i> <span data-i18n="admin_panel">แผงควบคุมแอดมิน</span></h1>
     
     <div class="warning-box">
-        <i class="fas fa-exclamation-triangle"></i> <strong>สำคัญ:</strong> ระบบนี้จะบันทึกการเปลี่ยนแปลงลง GitHub repo <code>joenita589-afk/Yamdook-Pattaya</code> โดยตรง ลูกค้าทุกคนจะเห็นการอัปเดตภายใน 1-2 นาทีหลัง Cloudflare Deploy
+        <i class="fas fa-exclamation-triangle"></i> <strong>สำคัญ:</strong> ระบบนี้จะบันทึกการเปลี่ยนแปลงลง GitHub repo <code>joenita589-afk/Yamdook-Pattaya</code> โดยตรง
     </div>
 
     <div class="tabs">
@@ -176,7 +200,6 @@ a { text-decoration: none; color: inherit; }
         <div class="form-group">
             <label>Personal Access Token (PAT)</label>
             <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxx">
-            <small style="color: var(--text-muted);">สร้างได้ที่: GitHub Settings → Developer Settings → Personal Access Tokens → scope: <code>repo</code></small>
         </div>
         <div class="form-group">
             <label>Branch</label>
@@ -190,7 +213,7 @@ a { text-decoration: none; color: inherit; }
     <div id="adminTabShops" class="admin-section" style="display:none;">
         <h3><i class="fas fa-store"></i> จัดการร้านค้าทั้งหมด</h3>
         <table class="admin-table">
-            <thead><tr><th>ID</th><th data-i18n="th_name">ชื่อร้าน</th><th data-i18n="th_owner">เจ้าของ</th><th data-i18n="th_action">จัดการ</th></tr></thead>
+            <thead><tr><th>ID</th><th>ชื่อร้าน</th><th>เจ้าของ</th><th>ช่องทางออนไลน์</th><th>Delivery</th><th>จัดการ</th></tr></thead>
             <tbody id="adminShopsList"></tbody>
         </table>
     </div>
@@ -198,7 +221,7 @@ a { text-decoration: none; color: inherit; }
     <div id="adminTabReviews" class="admin-section" style="display:none;">
         <h3><i class="fas fa-comments"></i> จัดการรีวิวทั้งหมด</h3>
         <table class="admin-table">
-            <thead><tr><th data-i18n="th_shop">ร้าน</th><th data-i18n="th_user">ผู้ใช้</th><th data-i18n="th_comment">ความคิดเห็น</th><th data-i18n="th_action">จัดการ</th></tr></thead>
+            <thead><tr><th>ร้าน</th><th>ผู้ใช้</th><th>ความคิดเห็น</th><th>จัดการ</th></tr></thead>
             <tbody id="adminReviewsList"></tbody>
         </table>
     </div>
@@ -236,16 +259,18 @@ a { text-decoration: none; color: inherit; }
     <div class="modal-box">
         <button class="modal-close" onclick="closeModal('addShopModal')"><i class="fas fa-times"></i></button>
         <h2 style="color:var(--primary); margin-bottom:20px;"><i class="fas fa-store"></i> <span data-i18n="add_shop_title">เพิ่มข้อมูลร้านอาหาร</span></h2>
+        
+        <!-- ข้อมูลหลัก -->
         <div class="form-group">
-            <label data-i18n="lbl_shop_name">ชื่อร้าน</label>
+            <label data-i18n="lbl_shop_name">ชื่อร้าน *</label>
             <input type="text" id="shopName" placeholder="เช่น มูกระทะตีแตก">
         </div>
         <div class="form-group">
-            <label data-i18n="lbl_location">สถานที่ / พื้นที่</label>
+            <label data-i18n="lbl_location">สถานที่ / พื้นที่ *</label>
             <input type="text" id="shopLocation" placeholder="เช่น ใกล้หาดจอมเทียน">
         </div>
         <div class="form-group">
-            <label data-i18n="lbl_hours">เวลาเปิด-ปิด</label>
+            <label data-i18n="lbl_hours">เวลาเปิด-ปิด *</label>
             <input type="text" id="shopHours" placeholder="เช่น 20:00 - 04:00">
         </div>
         <div class="form-group">
@@ -260,6 +285,49 @@ a { text-decoration: none; color: inherit; }
             <label data-i18n="lbl_desc">รายละเอียดร้าน</label>
             <textarea id="shopDesc" placeholder="บรรยากาศเป็นยังไง เหมาะกับใคร..."></textarea>
         </div>
+
+        <!-- แผนที่ -->
+        <h3 class="form-section-title"><i class="fas fa-map-marked-alt"></i> แผนที่ร้าน (Google Maps)</h3>
+        <div class="form-group">
+            <label>Google Maps URL หรือ Embed Link</label>
+            <input type="text" id="shopMapUrl" placeholder="https://maps.app.goo.gl/xxxxx หรือ https://www.google.com/maps/embed?pb=...">
+            <small style="color:var(--text-muted);">💡 เปิด Google Maps → กด "แชร์" → คัดลอกลิงก์ หรือคัดลอก "Embed a map" HTML</small>
+        </div>
+
+        <!-- ช่องทางออนไลน์ -->
+        <h3 class="form-section-title"><i class="fas fa-share-alt"></i> ช่องทางออนไลน์</h3>
+        <div class="form-group">
+            <label><i class="fab fa-facebook" style="color:#1877f2;"></i> Facebook Page URL</label>
+            <input type="text" id="shopFacebook" placeholder="https://facebook.com/yourpage">
+        </div>
+        <div class="form-group">
+            <label><i class="fab fa-tiktok" style="color:#fe2c55;"></i> TikTok URL</label>
+            <input type="text" id="shopTiktok" placeholder="https://tiktok.com/@yourshop">
+        </div>
+        <div class="form-group">
+            <label><i class="fab fa-line" style="color:#06c755;"></i> Line Official / Line ID</label>
+            <input type="text" id="shopLine" placeholder="@yourshop หรือ https://line.me/ti/p/~xxxx">
+        </div>
+        <div class="form-group">
+            <label><i class="fab fa-youtube" style="color:#ff0000;"></i> YouTube Channel</label>
+            <input type="text" id="shopYoutube" placeholder="https://youtube.com/@yourchannel">
+        </div>
+
+        <!-- ช่องทางสั่งอาหาร -->
+        <h3 class="form-section-title"><i class="fas fa-motorcycle"></i> ช่องทางสั่งอาหาร (Delivery)</h3>
+        <div class="form-group">
+            <label>🟦 LINE MAN URL</label>
+            <input type="text" id="shopLineman" placeholder="https://lineman.com/...">
+        </div>
+        <div class="form-group">
+            <label>🟩 Grab Food URL</label>
+            <input type="text" id="shopGrab" placeholder="https://grab.onelink.me/...">
+        </div>
+        <div class="form-group">
+            <label>🟧 Shopee Food URL</label>
+            <input type="text" id="shopShopee" placeholder="https://shopee.co.kr/...">
+        </div>
+
         <button class="btn btn-primary" onclick="saveShop()"><i class="fas fa-save"></i> <span data-i18n="btn_save">บันทึกร้านค้า</span></button>
     </div>
 </div>
@@ -284,10 +352,12 @@ const i18n = {
         toggle_login: 'มีบัญชีแล้ว? คลิกเพื่อเข้าสู่ระบบ', btn_register: 'สมัครสมาชิก',
         add_shop_title: 'เพิ่มข้อมูลร้านอาหาร', lbl_shop_name: 'ชื่อร้าน', lbl_location: 'สถานที่ / พื้นที่', lbl_hours: 'เวลาเปิด-ปิด',
         lbl_signature: 'เมนูเด็ด / จุดเด่น', lbl_img_url: 'URL รูปภาพหน้าร้าน', lbl_desc: 'รายละเอียดร้าน', btn_save: 'บันทึกร้านค้า',
-        admin_panel: 'แผงควบคุมแอดมิน', th_name: 'ชื่อร้าน', th_owner: 'เจ้าของ', th_action: 'จัดการ', th_shop: 'ร้าน', th_user: 'ผู้ใช้', th_comment: 'ความคิดเห็น',
+        admin_panel: 'แผงควบคุมแอดมิน',
         detail_hours: 'เวลาเปิด', detail_loc: 'พิกัด', detail_sig: 'เมนูเด็ด', write_review: 'เขียนรีวิว', btn_submit_review: 'ส่งรีวิว',
         reviews_title: 'รีวิวจากสมาชิก', no_review: 'ยังไม่มีการรีวิว เป็นคนแรกเลย!', alert_login: 'กรุณาเข้าสู่ระบบก่อน', alert_fill: 'กรุณากรอกข้อมูลให้ครบ',
-        alert_success: 'บันทึกสำเร็จ!', confirm_delete: 'ต้องการลบรายการนี้หรือไม่?'
+        alert_success: 'บันทึกสำเร็จ!', confirm_delete: 'ต้องการลบรายการนี้หรือไม่?',
+        section_social: 'ช่องทางออนไลน์', section_map: 'แผนที่ร้าน', section_delivery: 'สั่งอาหาร Delivery',
+        btn_open_map: 'เปิดใน Google Maps'
     },
     en: {
         nav_home: 'Home', nav_restaurants: 'Restaurants', nav_add: 'Add Your Shop', nav_login: 'Login', nav_admin: 'Admin',
@@ -298,10 +368,12 @@ const i18n = {
         toggle_login: 'Already have an account? Click to login', btn_register: 'Register',
         add_shop_title: 'Add Restaurant Info', lbl_shop_name: 'Shop Name', lbl_location: 'Location / Area', lbl_hours: 'Opening Hours',
         lbl_signature: 'Signature Dish', lbl_img_url: 'Image URL', lbl_desc: 'Description', btn_save: 'Save Shop',
-        admin_panel: 'Admin Dashboard', th_name: 'Name', th_owner: 'Owner', th_action: 'Action', th_shop: 'Shop', th_user: 'User', th_comment: 'Comment',
+        admin_panel: 'Admin Dashboard',
         detail_hours: 'Hours', detail_loc: 'Location', detail_sig: 'Signature', write_review: 'Write a Review', btn_submit_review: 'Submit Review',
         reviews_title: 'Member Reviews', no_review: 'No reviews yet. Be the first!', alert_login: 'Please login first', alert_fill: 'Please fill all fields',
-        alert_success: 'Saved successfully!', confirm_delete: 'Are you sure you want to delete this?'
+        alert_success: 'Saved successfully!', confirm_delete: 'Are you sure you want to delete this?',
+        section_social: 'Online Channels', section_map: 'Location Map', section_delivery: 'Order Delivery',
+        btn_open_map: 'Open in Google Maps'
     }
 };
 let currentLang = localStorage.getItem('yamdookLang') || 'th';
@@ -324,20 +396,52 @@ function initDB() {
     const saved = localStorage.getItem('yamdookPattayaDB');
     if (saved) {
         db = JSON.parse(saved);
+        // อัปเกรดข้อมูลเก่าให้รองรับ field ใหม่
+        db.restaurants.forEach(r => {
+            if (!r.social) r.social = {};
+            if (!r.delivery) r.delivery = {};
+            if (!r.mapUrl) r.mapUrl = '';
+        });
     } else {
-        // Default Admin
         db.users.push({ id: db.nextUserId++, username: 'admin', password: 'admin123', role: 'admin' });
         
-        // Sample Restaurants
         const sampleShops = [
-            { name: 'มูกระทะตีแตก', location: 'พัทยาใต้', hours: '20:00 - 04:00', signature: 'กุ้งแม่น้ำเผา, น้ำจิ้มซีฟู้ดมะนาวดอง', image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800', description: 'มูกระทะเปิดดึกสุดฮิต น้ำจิ้มซีฟู้ดรสเด็ด เนื้อสัตว์สดใหม่ บรรยากาศดีริมถนนพัทยาใต้' },
-            { name: 'ถ่านคุกลางคืน', location: 'ถนนคนเดินพัทยา', hours: '19:00 - 02:00', signature: 'เนื้อโคบุตะย่าง, หมูสามชั้น', image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800', description: 'ปิ้งย่างเตาถ่าน บรรยากาศชิลล์ริมถนน เสียงเพลงเพราะ เหมาะกับกลุ่มเพื่อน' },
-            { name: 'ซีฟู้ดจอมเทียนยามวิกาล', location: 'หาดจอมเทียน', hours: '18:00 - 02:00', signature: 'กุ้งแม่น้ำเผา, ปูผัดผงกะหรี่', image: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800', description: 'ซีฟู้ดริมหาดจอมเทียน กุ้งแม่น้ำเผา ปลาหมึกย่าง สดจากตลาดทุกวัน รับลมทะเล' },
-            { name: 'ส้มตำยกครก ตี 2', location: 'ซอยบัวขาว', hours: '18:00 - 03:00', signature: 'ส้มตำปูปลาร้า, ลาบเลือด', image: 'https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=800', description: 'ตำซิ่งรสจัดจ้าน เส้นมะละกอสับสดใหม่ แก้เลี่ยนหลังออกจากผับ' },
-            { name: 'ข้าวต้มโต้รุ่ง วงเวียนปลาโลมา', location: 'วงเวียนปลาโลมา', hours: '21:00 - 06:00', signature: 'ข้าวต้มปลา, ข้าวต้มหมูสับ', image: 'https://images.unsplash.com/photo-1547592180-85f173990554?w=800', description: 'ข้าวต้มปลา/หมูสับ ร้อนๆ คล่องคอ ตี 3 คนยังแน่น เหมาะกับสายแก้เมา' },
-            { name: 'Night Owl Bites', location: 'นอร์ธพัทยา', hours: '24 Hours', signature: 'Smash Burger, Loaded Fries', image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800', description: 'เบอร์เกอร์และของว่างสไตล์อเมริกัน เปิด 24 ชม. เอาใจนักท่องเที่ยวและคนนอนดึก' },
-            { name: 'ยำรุ่งเช้า', location: 'ซอยเขาน้อย', hours: '20:00 - 05:00', signature: 'ยำทะเลเดือด, ยำวุ้นเส้น', image: 'https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?w=800', description: 'ยำทะเลเดือด น้ำยำรสแซ่บ เปิดจนกว่าพระอาทิตย์จะขึ้น' },
-            { name: 'After Hours Eatery', location: 'Central Pattaya', hours: '01:00 - 10:00', signature: 'All-day Breakfast, Thai Tea', image: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?w=800', description: 'All-day breakfast ที่เสิร์ฟตั้งแต่ตี 1 เป็นต้นไป เหมาะกับคนเพิ่งกลับจากปาร์ตี้' }
+            { 
+                name: 'มูกระทะตีแตก', location: 'พัทยาใต้', hours: '20:00 - 04:00', 
+                signature: 'กุ้งแม่น้ำเผา, น้ำจิ้มซีฟู้ดมะนาวดอง', 
+                image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800', 
+                description: 'มูกระทะเปิดดึกสุดฮิต น้ำจิ้มซีฟู้ดรสเด็ด เนื้อสัตว์สดใหม่ บรรยากาศดีริมถนนพัทยาใต้',
+                social: { facebook: 'https://facebook.com/mootatatpataya', tiktok: 'https://tiktok.com/@mootatat', line: '@mootatat', youtube: '' },
+                mapUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d387571.0386528988!2d100.8166!3d12.9236!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTLCsDU1JzI1LjAiTiAxMDDCsDQ4JzU5LjgiRQ!5e0!3m2!1sth!2sth!4v1234567890',
+                delivery: { lineman: 'https://lineman.com/m/mootatat', grab: '', shopee: '' }
+            },
+            { 
+                name: 'ซีฟู้ดจอมเทียนยามวิกาล', location: 'หาดจอมเทียน', hours: '18:00 - 02:00', 
+                signature: 'กุ้งแม่น้ำเผา, ปูผัดผงกะหรี่', 
+                image: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800', 
+                description: 'ซีฟู้ดริมหาดจอมเทียน กุ้งแม่น้ำเผา ปลาหมึกย่าง สดจากตลาดทุกวัน รับลมทะเล',
+                social: { facebook: 'https://facebook.com/jomtienfood', tiktok: '', line: '@jomtienfood', youtube: 'https://youtube.com/@jomtienfood' },
+                mapUrl: '',
+                delivery: { lineman: 'https://lineman.com/m/jomtien', grab: 'https://grab.onelink.me/jomtien', shopee: 'https://shopee.co.kr/jomtien' }
+            },
+            { 
+                name: 'ส้มตำยกครก ตี 2', location: 'ซอยบัวขาว', hours: '18:00 - 03:00', 
+                signature: 'ส้มตำปูปลาร้า, ลาบเลือด', 
+                image: 'https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=800', 
+                description: 'ตำซิ่งรสจัดจ้าน เส้นมะละกอสับสดใหม่ แก้เลี่ยนหลังออกจากผับ',
+                social: { facebook: '', tiktok: 'https://tiktok.com/@somyum', line: '', youtube: '' },
+                mapUrl: '',
+                delivery: { lineman: '', grab: '', shopee: '' }
+            },
+            { 
+                name: 'Night Owl Bites', location: 'นอร์ธพัทยา', hours: '24 Hours', 
+                signature: 'Smash Burger, Loaded Fries', 
+                image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800', 
+                description: 'เบอร์เกอร์และของว่างสไตล์อเมริกัน เปิด 24 ชม. เอาใจนักท่องเที่ยวและคนนอนดึก',
+                social: { facebook: 'https://facebook.com/nightowlbites', tiktok: 'https://tiktok.com/@nightowl', line: '@nightowl', youtube: '' },
+                mapUrl: '',
+                delivery: { lineman: 'https://lineman.com/m/nightowl', grab: 'https://grab.onelink.me/nightowl', shopee: '' }
+            }
         ];
         
         sampleShops.forEach(shop => {
@@ -346,9 +450,8 @@ function initDB() {
             });
         });
         
-        // Sample reviews
         db.restaurants[0].reviews.push({ userId: 1, rating: 5, comment: 'น้ำจิ้มเด็ดมาก เปิดดึกจริงตี 2 ยังคนเต็ม', date: '2026-09-28' });
-        db.restaurants[2].reviews.push({ userId: 1, rating: 4, comment: 'กุ้งสดมาก ราคาไม่แพง วิวทะเลสวย', date: '2026-09-25' });
+        db.restaurants[1].reviews.push({ userId: 1, rating: 4, comment: 'กุ้งสดมาก ราคาไม่แพง วิวทะเลสวย', date: '2026-09-25' });
         
         saveDB();
     }
@@ -430,16 +533,33 @@ function saveShop() {
     const signature = document.getElementById('shopSignature').value.trim();
     const image = document.getElementById('shopImage').value.trim() || 'https://via.placeholder.com/800x400?text=No+Image';
     const description = document.getElementById('shopDesc').value.trim();
+    const mapUrl = document.getElementById('shopMapUrl').value.trim();
+    
+    const social = {
+        facebook: document.getElementById('shopFacebook').value.trim(),
+        tiktok: document.getElementById('shopTiktok').value.trim(),
+        line: document.getElementById('shopLine').value.trim(),
+        youtube: document.getElementById('shopYoutube').value.trim()
+    };
+    
+    const delivery = {
+        lineman: document.getElementById('shopLineman').value.trim(),
+        grab: document.getElementById('shopGrab').value.trim(),
+        shopee: document.getElementById('shopShopee').value.trim()
+    };
 
     if (!name || !location || !hours) return alert(i18n[currentLang].alert_fill);
 
     db.restaurants.push({
-        id: db.nextRestId++, ownerId: user.id, name, location, hours, signature, image, description, reviews: []
+        id: db.nextRestId++, ownerId: user.id, name, location, hours, signature, image, description,
+        social, mapUrl, delivery, reviews: []
     });
     saveDB();
     closeModal('addShopModal');
     alert(i18n[currentLang].alert_success);
-    ['shopName','shopLocation','shopHours','shopSignature','shopImage','shopDesc'].forEach(id => document.getElementById(id).value = '');
+    
+    // Clear form
+    ['shopName','shopLocation','shopHours','shopSignature','shopImage','shopDesc','shopMapUrl','shopFacebook','shopTiktok','shopLine','shopYoutube','shopLineman','shopGrab','shopShopee'].forEach(id => document.getElementById(id).value = '');
     renderAll();
 }
 
@@ -459,6 +579,57 @@ function renderStars(rating) {
         else stars += '<i class="far fa-star"></i>';
     }
     return stars;
+}
+
+// แปลง URL แผนที่ให้เป็น embed URL
+function getMapEmbedUrl(url) {
+    if (!url) return '';
+    // ถ้าเป็น embed URL แล้ว
+    if (url.includes('google.com/maps/embed')) return url;
+    // ถ้าเป็น short link (maps.app.goo.gl, maps.google.com) ให้แปลงเป็น embed
+    if (url.includes('maps.app.goo.gl') || url.includes('maps.google.com') || url.includes('google.com/maps')) {
+        return `https://maps.google.com/maps?q=${encodeURIComponent(url)}&output=embed`;
+    }
+    return url;
+}
+
+// แปลง Line ID เป็น URL ถ้าเป็น @username
+function normalizeLineUrl(line) {
+    if (!line) return '';
+    if (line.startsWith('http')) return line;
+    if (line.startsWith('@')) return `https://line.me/ti/p/~${line.substring(1)}`;
+    return `https://line.me/ti/p/~${line}`;
+}
+
+// สร้าง social links HTML
+function renderSocialLinks(social) {
+    if (!social) return '';
+    let html = '';
+    if (social.facebook) html += `<a href="${social.facebook}" target="_blank" class="social-btn facebook"><i class="fab fa-facebook"></i> Facebook</a>`;
+    if (social.tiktok) html += `<a href="${social.tiktok}" target="_blank" class="social-btn tiktok"><i class="fab fa-tiktok"></i> TikTok</a>`;
+    if (social.line) html += `<a href="${normalizeLineUrl(social.line)}" target="_blank" class="social-btn line"><i class="fab fa-line"></i> Line</a>`;
+    if (social.youtube) html += `<a href="${social.youtube}" target="_blank" class="social-btn youtube"><i class="fab fa-youtube"></i> YouTube</a>`;
+    return html ? `<div class="social-links">${html}</div>` : '';
+}
+
+// สร้าง delivery links HTML
+function renderDeliveryLinks(delivery) {
+    if (!delivery) return '';
+    let html = '';
+    if (delivery.lineman) html += `<a href="${delivery.lineman}" target="_blank" class="delivery-btn lineman">🟦 LINE MAN</a>`;
+    if (delivery.grab) html += `<a href="${delivery.grab}" target="_blank" class="delivery-btn grab">🟩 Grab</a>`;
+    if (delivery.shopee) html += `<a href="${delivery.shopee}" target="_blank" class="delivery-btn shopee">🟧 Shopee Food</a>`;
+    return html ? `<div class="delivery-links">${html}</div>` : '';
+}
+
+// สร้าง delivery mini badges สำหรับการ์ด
+function renderDeliveryBadges(delivery) {
+    if (!delivery) return '';
+    let badges = '';
+    if (delivery.lineman) badges += '<span class="delivery-mini-badge">🟦 LINE MAN</span>';
+    if (delivery.grab) badges += '<span class="delivery-mini-badge">🟩 Grab</span>';
+    if (delivery.shopee) badges += '<span class="delivery-mini-badge">🟧 Shopee</span>';
+    return badges ? `<div class="card-delivery-badges">${badges}</div>` : '';
 }
 
 function renderRestaurants() {
@@ -481,6 +652,7 @@ function renderRestaurants() {
                     </div>
                     <div class="card-desc">${r.description}</div>
                     <span class="tag"><i class="fas fa-map-marker-alt"></i> ${r.location}</span>
+                    ${renderDeliveryBadges(r.delivery)}
                 </div>
             </div>
         `).join('');
@@ -518,6 +690,38 @@ function openDetail(id) {
         }).join('');
     }
 
+    // สร้างส่วนแผนที่
+    let mapHtml = '';
+    if (r.mapUrl) {
+        const embedUrl = getMapEmbedUrl(r.mapUrl);
+        mapHtml = `
+            <hr style="border-color:rgba(255,255,255,0.1); margin:20px 0;">
+            <h3 style="color:var(--secondary); margin-bottom:15px;"><i class="fas fa-map-marked-alt"></i> ${t.section_map}</h3>
+            <div class="map-container">
+                <iframe src="${embedUrl}" allowfullscreen loading="lazy"></iframe>
+            </div>
+            <div style="margin-top:10px;">
+                <a href="${r.mapUrl}" target="_blank" class="social-btn maps"><i class="fas fa-directions"></i> ${t.btn_open_map}</a>
+            </div>
+        `;
+    }
+
+    // สร้างส่วนช่องทางออนไลน์
+    const socialHtml = renderSocialLinks(r.social);
+    const socialSection = socialHtml ? `
+        <hr style="border-color:rgba(255,255,255,0.1); margin:20px 0;">
+        <h3 style="color:var(--secondary); margin-bottom:15px;"><i class="fas fa-share-alt"></i> ${t.section_social}</h3>
+        ${socialHtml}
+    ` : '';
+
+    // สร้างส่วน Delivery
+    const deliveryHtml = renderDeliveryLinks(r.delivery);
+    const deliverySection = deliveryHtml ? `
+        <hr style="border-color:rgba(255,255,255,0.1); margin:20px 0;">
+        <h3 style="color:var(--secondary); margin-bottom:15px;"><i class="fas fa-motorcycle"></i> ${t.section_delivery}</h3>
+        ${deliveryHtml}
+    ` : '';
+
     document.getElementById('detailContent').innerHTML = `
         <img src="${r.image}" class="modal-img" onerror="this.src='https://via.placeholder.com/800x400?text=No+Image'">
         <h1 style="color:var(--primary); margin-bottom:5px;">${r.name}</h1>
@@ -528,10 +732,14 @@ function openDetail(id) {
         <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:15px; margin-bottom:30px;">
             <div style="background:var(--dark); padding:15px; border-radius:10px;"><strong style="color:var(--secondary);"><i class="fas fa-clock"></i> ${t.detail_hours}:</strong><br>${r.hours}</div>
             <div style="background:var(--dark); padding:15px; border-radius:10px;"><strong style="color:var(--secondary);"><i class="fas fa-map-marker-alt"></i> ${t.detail_loc}:</strong><br>${r.location}</div>
-            <div style="background:var(--dark); padding:15px; border-radius:10px;"><strong style="color:var(--secondary);"><i class="fas fa-utensils"></i> ${t.detail_sig}:</strong><br>${r.signature}</div>
+            <div style="background:var(--dark); padding:15px; border-radius:10px;"><strong style="color:var(--secondary);"><i class="fas fa-utensils"></i> ${t.detail_sig}:</strong><br>${r.signature || '-'}</div>
         </div>
 
-        <hr style="border-color:rgba(255,255,255,0.1); margin-bottom:20px;">
+        ${socialSection}
+        ${deliverySection}
+        ${mapHtml}
+
+        <hr style="border-color:rgba(255,255,255,0.1); margin:20px 0;">
         <h3 style="color:var(--secondary); margin-bottom:15px;"><i class="fas fa-comments"></i> ${t.reviews_title}</h3>
         
         ${user ? `
@@ -589,10 +797,14 @@ function renderAdminShops() {
     const shopsList = document.getElementById('adminShopsList');
     shopsList.innerHTML = db.restaurants.map(r => {
         const owner = db.users.find(u => u.id === r.ownerId);
+        const socialCount = r.social ? Object.values(r.social).filter(v => v).length : 0;
+        const deliveryCount = r.delivery ? Object.values(r.delivery).filter(v => v).length : 0;
         return `<tr>
             <td>${r.id}</td>
             <td>${r.name}</td>
             <td>${owner ? owner.username : 'System'}</td>
+            <td>${socialCount > 0 ? `<span style="color:var(--success);">${socialCount} ช่องทาง</span>` : '<span style="color:var(--text-muted);">-</span>'}</td>
+            <td>${deliveryCount > 0 ? `<span style="color:var(--success);">${deliveryCount} แอป</span>` : '<span style="color:var(--text-muted);">-</span>'}</td>
             <td><button class="btn btn-danger" onclick="deleteShop(${r.id})"><i class="fas fa-trash"></i></button></td>
         </tr>`;
     }).join('');
