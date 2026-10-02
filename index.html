@@ -141,8 +141,8 @@ a { text-decoration: none; color: inherit; }
     <div class="logo-text" onclick="showSection('home', event)"><i class="fas fa-moon"></i> Yamdook-Pattaya</div>
     <div class="lang-select">
         <select id="langSelect" onchange="changeLang(this.value)">
-            <option value="th">🇹 TH</option>
-            <option value="en">🇬 EN</option>
+            <option value="th">🇹🇭 TH</option>
+            <option value="en">🇧 EN</option>
         </select>
     </div>
 </div>
@@ -188,7 +188,7 @@ a { text-decoration: none; color: inherit; }
     </div>
 
     <div class="tabs">
-        <button class="tab active" onclick="showAdminTab('github', event)"> <span data-i18n="tab_github">ตั้งค่า GitHub</span></button>
+        <button class="tab active" onclick="showAdminTab('github', event)">🔧 <span data-i18n="tab_github">ตั้งค่า GitHub</span></button>
         <button class="tab" onclick="showAdminTab('shops', event)">🏪 <span data-i18n="tab_shops">จัดการร้าน</span></button>
         <button class="tab" onclick="showAdminTab('reviews', event)">⭐ <span data-i18n="tab_reviews">จัดการรีวิว</span></button>
         <button class="tab" onclick="showAdminTab('users', event)">👥 <span data-i18n="tab_users">จัดการสมาชิก</span></button>
@@ -328,6 +328,31 @@ a { text-decoration: none; color: inherit; }
             <textarea id="shopDesc" placeholder="บรรยากาศเป็นยังไง เหมาะกับใคร..."></textarea>
         </div>
 
+        <!-- ✅ เพิ่มฟอร์มภาษาอังกฤษ -->
+        <h3 class="form-section-title" style="margin-top:30px; border-top:2px solid var(--primary); padding-top:15px;">
+            <i class="fas fa-globe"></i> <span data-i18n="section_english">ข้อมูลภาษาอังกฤษ (ถ้ามี)</span>
+        </h3>
+        
+        <div class="form-group">
+            <label>Shop Name (English)</label>
+            <input type="text" id="shopNameEn" placeholder="e.g., Moo Kata Tee Taek">
+        </div>
+        
+        <div class="form-group">
+            <label>Location (English)</label>
+            <input type="text" id="shopLocationEn" placeholder="e.g., South Pattaya">
+        </div>
+        
+        <div class="form-group">
+            <label>Signature Dish (English)</label>
+            <input type="text" id="shopSignatureEn" placeholder="e.g., Grilled River Prawn">
+        </div>
+        
+        <div class="form-group">
+            <label>Description (English)</label>
+            <textarea id="shopDescEn" placeholder="Description in English..."></textarea>
+        </div>
+
         <h3 class="form-section-title"><i class="fas fa-images"></i> <span data-i18n="section_gallery">รูปภาพร้าน (หลายรูป)</span></h3>
         <div class="form-group">
             <label data-i18n="lbl_add_image">เพิ่ม URL รูปภาพ</label>
@@ -437,7 +462,8 @@ const i18n = {
         alert_verify_to_review: 'กรุณายืนยันอีเมลก่อนจึงจะสามารถรีวิวได้',
         alert_already_reviewed: 'คุณได้รีวิวร้านนี้ไปแล้ว 1 ครั้ง',
         already_reviewed: 'คุณได้รีวิวร้านนี้ไปแล้ว',
-        unknown_user: 'ไม่ระบุชื่อ'
+        unknown_user: 'ไม่ระบุชื่อ',
+        section_english: 'ข้อมูลภาษาอังกฤษ (ถ้ามี)'
     },
     en: {
         nav_home: 'Home', nav_restaurants: 'Restaurants', nav_add: 'Add Your Shop', nav_login: 'Login', nav_admin: 'Admin',
@@ -478,10 +504,17 @@ const i18n = {
         alert_verify_to_review: 'Please verify your email before writing a review',
         alert_already_reviewed: 'You have already reviewed this shop once',
         already_reviewed: 'You have already reviewed this shop',
-        unknown_user: 'Unknown'
+        unknown_user: 'Unknown',
+        section_english: 'English Information (Optional)'
     }
 };
 let currentLang = localStorage.getItem('yamdookLang') || 'th';
+
+// ✅ Helper: ดึงชื่อตามภาษา
+function getLocalized(r, key) {
+    if (currentLang === 'en' && r[key + 'En']) return r[key + 'En'];
+    return r[key] || '';
+}
 
 function changeLang(lang) {
     currentLang = lang;
@@ -497,7 +530,6 @@ function changeLang(lang) {
     
     updateNavbar();
     renderRestaurants();
-    renderAll();
     
     if (document.getElementById('admin').classList.contains('active')) {
         renderAdminShops();
@@ -520,9 +552,13 @@ function initDB() {
     let needsReset = false;
     
     if (saved) {
-        db = JSON.parse(saved);
+        try {
+            db = JSON.parse(saved);
+        } catch(e) {
+            needsReset = true;
+        }
         
-        if (db.restaurants && db.restaurants.length > 0) {
+        if (!needsReset && db.restaurants && db.restaurants.length > 0) {
             if (!('nameEn' in db.restaurants[0])) {
                 console.log('Detected old data structure, resetting...');
                 needsReset = true;
@@ -591,6 +627,7 @@ function initDB() {
         saveDB();
     }
 }
+
 function saveDB() { localStorage.setItem('yamdookPattayaDB', JSON.stringify(db)); }
 function getCurrentUser() {
     const uid = sessionStorage.getItem('currentUserId');
@@ -743,10 +780,14 @@ function openEditShopModal(shopId) {
     document.getElementById('shopModalTitle').textContent = i18n[currentLang].edit_shop_title;
     
     document.getElementById('shopName').value = shop.name || '';
+    document.getElementById('shopNameEn').value = shop.nameEn || '';
     document.getElementById('shopLocation').value = shop.location || '';
+    document.getElementById('shopLocationEn').value = shop.locationEn || '';
     document.getElementById('shopHours').value = shop.hours || '';
     document.getElementById('shopSignature').value = shop.signature || '';
+    document.getElementById('shopSignatureEn').value = shop.signatureEn || '';
     document.getElementById('shopDesc').value = shop.description || '';
+    document.getElementById('shopDescEn').value = shop.descriptionEn || '';
     document.getElementById('shopMapUrl').value = shop.mapUrl || '';
     document.getElementById('shopFacebook').value = shop.social?.facebook || '';
     document.getElementById('shopTiktok').value = shop.social?.tiktok || '';
@@ -762,7 +803,7 @@ function openEditShopModal(shopId) {
 }
 
 function clearShopForm() {
-    ['shopName','shopLocation','shopHours','shopSignature','shopDesc','shopMapUrl','shopFacebook','shopTiktok','shopLine','shopYoutube','shopLineman','shopGrab','shopShopee','newImageUrl'].forEach(id => {
+    ['shopName','shopNameEn','shopLocation','shopLocationEn','shopHours','shopSignature','shopSignatureEn','shopDesc','shopDescEn','shopMapUrl','shopFacebook','shopTiktok','shopLine','shopYoutube','shopLineman','shopGrab','shopShopee','newImageUrl'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
     });
@@ -810,6 +851,11 @@ function saveShop() {
     const description = document.getElementById('shopDesc').value.trim();
     const mapUrl = document.getElementById('shopMapUrl').value.trim();
     
+    const nameEn = document.getElementById('shopNameEn').value.trim() || name;
+    const locationEn = document.getElementById('shopLocationEn').value.trim() || location;
+    const signatureEn = document.getElementById('shopSignatureEn').value.trim() || signature;
+    const descriptionEn = document.getElementById('shopDescEn').value.trim() || description;
+    
     const social = {
         facebook: document.getElementById('shopFacebook').value.trim(),
         tiktok: document.getElementById('shopTiktok').value.trim(),
@@ -832,10 +878,14 @@ function saveShop() {
         const shop = db.restaurants.find(r => r.id === parseInt(editId));
         if (shop) {
             shop.name = name;
+            shop.nameEn = nameEn;
             shop.location = location;
+            shop.locationEn = locationEn;
             shop.hours = hours;
             shop.signature = signature;
+            shop.signatureEn = signatureEn;
             shop.description = description;
+            shop.descriptionEn = descriptionEn;
             shop.image = image;
             shop.images = images;
             shop.mapUrl = mapUrl;
@@ -844,8 +894,8 @@ function saveShop() {
         }
     } else {
         db.restaurants.push({
-            id: db.nextRestId++, ownerId: user.id, name, location, hours, signature, image, images, description,
-            social, mapUrl, delivery, reviews: []
+            id: db.nextRestId++, ownerId: user.id, name, nameEn, location, locationEn, hours, signature, signatureEn, description, descriptionEn,
+            image, images, social, mapUrl, delivery, reviews: []
         });
     }
     
@@ -917,7 +967,7 @@ function renderDeliveryLinks(delivery) {
     if (!delivery) return '';
     let html = '';
     if (delivery.lineman) html += `<a href="${delivery.lineman}" target="_blank" class="delivery-btn lineman">🟦 LINE MAN</a>`;
-    if (delivery.grab) html += `<a href="${delivery.grab}" target="_blank" class="delivery-btn grab"> Grab</a>`;
+    if (delivery.grab) html += `<a href="${delivery.grab}" target="_blank" class="delivery-btn grab">🟩 Grab</a>`;
     if (delivery.shopee) html += `<a href="${delivery.shopee}" target="_blank" class="delivery-btn shopee">🟧 Shopee Food</a>`;
     return html ? `<div class="delivery-links">${html}</div>` : '';
 }
@@ -925,8 +975,8 @@ function renderDeliveryLinks(delivery) {
 function renderDeliveryBadges(delivery) {
     if (!delivery) return '';
     let badges = '';
-    if (delivery.lineman) badges += '<span class="delivery-mini-badge"> LINE MAN</span>';
-    if (delivery.grab) badges += '<span class="delivery-mini-badge">🟩 Grab</span>';
+    if (delivery.lineman) badges += '<span class="delivery-mini-badge">🟦 LINE MAN</span>';
+    if (delivery.grab) badges += '<span class="delivery-mini-badge"> Grab</span>';
     if (delivery.shopee) badges += '<span class="delivery-mini-badge">🟧 Shopee</span>';
     return badges ? `<div class="card-delivery-badges">${badges}</div>` : '';
 }
@@ -941,10 +991,9 @@ function renderRestaurants() {
             data = data.sort((a, b) => getAvgRating(b) - getAvgRating(a)).slice(0, 6);
         }
         grid.innerHTML = data.map(r => {
-            const displayName = currentLang === 'en' && r.nameEn ? r.nameEn : r.name;
-            const displayDesc = currentLang === 'en' && r.descriptionEn ? r.descriptionEn : r.description;
-            const displayLoc = currentLang === 'en' && r.locationEn ? r.locationEn : r.location;
-            const displaySig = currentLang === 'en' && r.signatureEn ? r.signatureEn : r.signature;
+            const displayName = getLocalized(r, 'name');
+            const displayDesc = getLocalized(r, 'description');
+            const displayLoc = getLocalized(r, 'location');
             
             return `
             <div class="card" onclick="openDetail(${r.id})">
@@ -1050,10 +1099,10 @@ function openDetail(id) {
         ${socialHtml}
     ` : '';
 
-    const displayName = currentLang === 'en' && r.nameEn ? r.nameEn : r.name;
-    const displayDesc = currentLang === 'en' && r.descriptionEn ? r.descriptionEn : r.description;
-    const displayLoc = currentLang === 'en' && r.locationEn ? r.locationEn : r.location;
-    const displaySig = currentLang === 'en' && r.signatureEn ? r.signatureEn : (r.signature || '-');
+    const displayName = getLocalized(r, 'name');
+    const displayDesc = getLocalized(r, 'description');
+    const displayLoc = getLocalized(r, 'location');
+    const displaySig = getLocalized(r, 'signature') || '-';
     const reviewPlaceholder = currentLang === 'en' ? 'Share your experience...' : 'แชร์ประสบการณ์ของคุณ...';
 
     const deliveryHtml = renderDeliveryLinks(r.delivery);
@@ -1159,9 +1208,10 @@ function renderAdminShops() {
         const socialCount = r.social ? Object.values(r.social).filter(v => v).length : 0;
         const deliveryCount = r.delivery ? Object.values(r.delivery).filter(v => v).length : 0;
         const imgCount = (r.images || []).length;
+        const displayName = getLocalized(r, 'name');
         return `<tr>
             <td>${r.id}</td>
-            <td>${r.name}</td>
+            <td>${displayName}</td>
             <td>${owner ? owner.username : 'System'}</td>
             <td>${imgCount} ${currentLang === 'th' ? 'รูป' : 'imgs'}</td>
             <td>${socialCount > 0 ? `<span style="color:var(--success);">${socialCount}</span>` : '-'}</td>
@@ -1177,10 +1227,12 @@ function renderAdminShops() {
 function renderAdminReviews() {
     const reviewsList = document.getElementById('adminReviewsList');
     let allReviews = [];
+    const t = i18n[currentLang];
     db.restaurants.forEach(r => {
         r.reviews.forEach((rev, idx) => {
-            const u = db.users.find(x => x.id === rev.userId) || {username: currentLang === 'th' ? 'ไม่ระบุชื่อ' : 'Unknown'};
-            allReviews.push({ restId: r.id, restName: r.name, userName: u.username, comment: rev.comment, reviewIdx: idx });
+            const u = db.users.find(x => x.id === rev.userId) || {username: t.unknown_user};
+            const displayName = getLocalized(r, 'name');
+            allReviews.push({ restId: r.id, restName: displayName, userName: u.username, comment: rev.comment, reviewIdx: idx });
         });
     });
     reviewsList.innerHTML = allReviews.map(rev => `
