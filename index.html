@@ -436,7 +436,8 @@ const i18n = {
         alert_welcome: '✅ ยืนยันอีเมลสำเร็จ! ยินดีต้อนรับสู่ Yamdook-Pattaya',
         alert_verify_to_review: 'กรุณายืนยันอีเมลก่อนจึงจะสามารถรีวิวได้',
         alert_already_reviewed: 'คุณได้รีวิวร้านนี้ไปแล้ว 1 ครั้ง',
-        already_reviewed: 'คุณได้รีวิวร้านนี้ไปแล้ว'
+        already_reviewed: 'คุณได้รีวิวร้านนี้ไปแล้ว',
+        unknown_user: 'ไม่ระบุชื่อ'
     },
     en: {
         nav_home: 'Home', nav_restaurants: 'Restaurants', nav_add: 'Add Your Shop', nav_login: 'Login', nav_admin: 'Admin',
@@ -476,7 +477,8 @@ const i18n = {
         alert_welcome: '✅ Email verified successfully! Welcome to Yamdook-Pattaya',
         alert_verify_to_review: 'Please verify your email before writing a review',
         alert_already_reviewed: 'You have already reviewed this shop once',
-        already_reviewed: 'You have already reviewed this shop'
+        already_reviewed: 'You have already reviewed this shop',
+        unknown_user: 'Unknown'
     }
 };
 let currentLang = localStorage.getItem('yamdookLang') || 'th';
@@ -494,6 +496,11 @@ function changeLang(lang) {
     });
     
     renderAll();
+    
+    // ✅ แก้ไข: ถ้าเปิดหน้ารายละเอียดร้านอยู่ ให้เรนเดอร์ใหม่เพื่อเปลี่ยนภาษาใน Modal
+    if (document.getElementById('detailModal').classList.contains('show') && selectedRestId) {
+        openDetail(selectedRestId);
+    }
 }
 
 let db = { users: [], restaurants: [], nextUserId: 1, nextRestId: 1 };
@@ -928,7 +935,6 @@ function openDetail(id) {
     const t = i18n[currentLang];
     const user = getCurrentUser();
     
-    // ตรวจสอบว่า user นี้เคยรีวิวร้านนี้ไปแล้วหรือยัง (1 user รีวิวได้แค่ 1 ครั้ง)
     const hasReviewed = user && r.reviews.some(rev => rev.userId === user.id);
     
     let reviewsHtml = '';
@@ -936,11 +942,12 @@ function openDetail(id) {
         reviewsHtml = `<p style="text-align:center; color:var(--text-muted); padding:20px;">${t.no_review}</p>`;
     } else {
         reviewsHtml = r.reviews.map(rev => {
-            const revUser = db.users.find(u => u.id === rev.userId) || { username: 'Unknown' };
+            const revUser = db.users.find(u => u.id === rev.userId);
+            const username = revUser ? revUser.username : t.unknown_user;
             return `
                 <div class="review-card">
                     <div class="review-header">
-                        <span class="review-user"><i class="fas fa-user-circle"></i> ${revUser.username}</span>
+                        <span class="review-user"><i class="fas fa-user-circle"></i> ${username}</span>
                         <span class="review-date">${rev.date}</span>
                     </div>
                     <div class="rating-stars" style="margin-bottom:8px;">${renderStars(rev.rating)}</div>
@@ -1077,7 +1084,6 @@ function submitReview() {
     const r = db.restaurants.find(x => x.id === selectedRestId);
     if (!r) return;
 
-    // ตรวจสอบซ้ำอีกครั้งก่อนบันทึก (ป้องกัน Double Submit)
     if (r.reviews.some(rev => rev.userId === user.id)) {
         return alert(i18n[currentLang].alert_already_reviewed);
     }
@@ -1127,7 +1133,7 @@ function renderAdminReviews() {
     let allReviews = [];
     db.restaurants.forEach(r => {
         r.reviews.forEach((rev, idx) => {
-            const u = db.users.find(x => x.id === rev.userId) || {username: 'Unknown'};
+            const u = db.users.find(x => x.id === rev.userId) || {username: currentLang === 'th' ? 'ไม่ระบุชื่อ' : 'Unknown'};
             allReviews.push({ restId: r.id, restName: r.name, userName: u.username, comment: rev.comment, reviewIdx: idx });
         });
     });
